@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { DarkModeToggle } from "../toggle-dark-mode";
+import { DarkModeToggle } from "@/components/ui/toggle-dark-mode";
 
 // Menu items.
 const items = [
