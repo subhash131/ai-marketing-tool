@@ -1,5 +1,5 @@
-import { LaunchBrowserTak } from "../tasks/launch-browser";
+import { LaunchBrowserTask } from "../tasks/launch-browser";
 
 export const TaskRegistry = {
-  LAUNCH_BROWSER: LaunchBrowserTak,
+  LAUNCH_BROWSER: LaunchBrowserTask,
 };

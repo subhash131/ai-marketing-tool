@@ -48,8 +48,9 @@ const Editor = () => {
         fitViewOptions={fitViewOptions}
       >
         <Controls
-          position="top-left"
-          className="text-black"
+          position="bottom-left"
+          orientation="horizontal"
+          className="text-black pl-10 pb-4"
           fitViewOptions={fitViewOptions}
         />
         <Background />

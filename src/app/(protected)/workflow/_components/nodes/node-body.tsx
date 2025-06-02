@@ -1,3 +1,6 @@
+import { cn } from "@/lib/utils";
+import { TaskParam } from "@/types/flow-node";
+import { Handle, Position } from "@xyflow/react";
 import React from "react";
 
 const NodeBody = ({ children }: { children: React.ReactNode }) => {
@@ -6,21 +9,25 @@ const NodeBody = ({ children }: { children: React.ReactNode }) => {
 export default NodeBody;
 
 export const NodeInput = ({
-  name,
-  type,
-  helperText,
-  required,
-  hideHandle,
-}: any) => {
+  input: { name, type, helperText, required, hideHandle, value },
+}: {
+  input: TaskParam;
+}) => {
   return (
-    <div className="py-2">
+    <div className="p-2 relative">
       <pre className="text-xs">
         {JSON.stringify(
-          { name, type, helperText, required, hideHandle },
+          { name, type, helperText, required, hideHandle, value },
           null,
           2
         )}
       </pre>
+      <Handle
+        id={"ssubas"}
+        type="source"
+        position={Position.Left}
+        className={cn("!size-3 active:!bg-blue-500")}
+      />
     </div>
   );
 };

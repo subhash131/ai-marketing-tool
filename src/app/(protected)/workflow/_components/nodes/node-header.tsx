@@ -11,7 +11,7 @@ const NodeHeader = ({ taskType }: props) => {
   const task = TaskRegistry[taskType];
   console.log(task);
   return (
-    <div className="w-full flex flex-col border-b px-2 py-1 gap-2 cursor-grab active:cursor-grabbing drag-handle">
+    <div className="w-full flex flex-col border-b gap-2 cursor-grab active:cursor-grabbing drag-handle p-2">
       <div className=" flex items-center justify-between">
         <div className="flex items-center justify-center gap-2">
           <Globe size={14} />
@@ -22,7 +22,7 @@ const NodeHeader = ({ taskType }: props) => {
             <span className="size-full absolute top-0 left-0 bg-green-500 opacity-30" />
             <Check size={14} />
           </div>
-          <button className="px-1 py-0.5 rounded-xs dark:bg-[#1f1f1f] bg-[#e9e9e9]">
+          <button className="px-1 py-0.5">
             <Play size={14} />
           </button>
         </div>

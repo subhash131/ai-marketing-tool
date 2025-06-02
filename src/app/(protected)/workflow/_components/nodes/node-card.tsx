@@ -27,7 +27,7 @@ const NodeCard = ({ nodeId, children, isSelected }: Props) => {
         setCenter(x, y, { duration: 500, zoom: 1 });
       }}
       className={cn(
-        "cursor-default rounded-md p-2 border active:border-2 dark:bg-[#18181B] bg-[#ffffff] w-80",
+        "cursor-default rounded-md border active:border-2 dark:bg-[#18181B] bg-[#ffffff] w-80",
         isSelected && "border-blue-500"
       )}
     >
