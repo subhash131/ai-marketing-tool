@@ -1,7 +1,8 @@
 import React from "react";
+import EditorWrapper from "../_components/editor-wrapper";
 
-const WorkflowPage = ({ params }: { params: { id: string } }) => {
-  return <div>WorkflowPage {params.id}</div>;
+const WorkflowPage = () => {
+  return <EditorWrapper />;
 };
 
 export default WorkflowPage;

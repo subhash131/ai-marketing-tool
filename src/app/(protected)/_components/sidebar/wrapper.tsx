@@ -15,12 +15,12 @@ export default async function SidebarWrapper({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <main className="size-full">
-        <SidebarTrigger className="absolute">
-          <span className="cursor-pointer p-2 rounded-md dark:bg-[#171717] bg-[#FAFAFA]">
+        <SidebarTrigger className="absolute bottom-40 z-50">
+          <span className="cursor-pointer p-2 rounded-r-md dark:bg-[#171717] bg-[#FAFAFA]">
             <PanelLeftIcon />
           </span>
         </SidebarTrigger>
-        <div className="pl-8 pt-4 h-screen w-full">{children}</div>
+        <div className="h-screen w-full">{children}</div>
       </main>
     </SidebarProvider>
   );
