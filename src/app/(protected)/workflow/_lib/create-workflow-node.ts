@@ -1,4 +1,6 @@
+"use client";
 import { FlowNode, TaskType } from "@/types/flow-node";
+import { v4 as uuidv4 } from "uuid";
 
 export function createFlowNode({
   nodeType,
@@ -7,8 +9,9 @@ export function createFlowNode({
   nodeType: TaskType;
   position?: { x: number; y: number };
 }): FlowNode {
+  const id = uuidv4();
   return {
-    id: crypto.randomUUID(),
+    id,
     type: "FlowScrapeNode",
     dragHandle: ".drag-handle",
     data: {
