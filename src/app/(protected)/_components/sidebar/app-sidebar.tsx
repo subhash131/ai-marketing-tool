@@ -1,4 +1,15 @@
-import { Calendar, Home, Inbox, Search, Settings, X } from "lucide-react";
+"use client";
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Menu,
+  Moon,
+  Search,
+  Settings,
+  Sun,
+  X,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -10,8 +21,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { DarkModeToggle } from "@/components/ui/toggle-dark-mode";
+import { Label } from "@/components/ui/label";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 // Menu items.
 const items = [
@@ -43,44 +57,65 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { open } = useSidebar();
+  const { setTheme, theme } = useTheme();
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center justify-between">
-            Workflow
-            <SidebarTrigger>
-              <X />
-            </SidebarTrigger>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+    <div className="absolute left-0 top-0 w-fit z-50">
+      <Sidebar collapsible="icon">
+        <div className="flex items-center gap-2 w-full pt-4 ml-2">
+          <SidebarTrigger className="flex items-center justify-center">
+            <Menu />
+          </SidebarTrigger>
+          <Label
+            className={cn(
+              `${open ? "opacity-100" : "opacity-0"}`,
+              "transition"
+            )}
+          >
+            Sidebar
+          </Label>
+        </div>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Workflow</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    onClick={() =>
+                      setTheme((prev) => (prev === "light" ? "dark" : "light"))
+                    }
+                  >
+                    <a href="#">
+                      {theme === "light" && <Moon />}
+                      {theme === "dark" && <Sun />}
+                      <span>Change Mode</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <DarkModeToggle />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </div>
   );
 }

@@ -15,11 +15,6 @@ export default async function SidebarWrapper({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <main className="size-full">
-        <SidebarTrigger className="absolute top-10 z-50">
-          <span className="cursor-pointer p-2 rounded-r-md dark:bg-[#171717] bg-[#FAFAFA]">
-            <PanelRightClose />
-          </span>
-        </SidebarTrigger>
         <div className="h-screen w-full">{children}</div>
       </main>
     </SidebarProvider>

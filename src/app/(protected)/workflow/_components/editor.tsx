@@ -13,7 +13,8 @@ import "@xyflow/react/dist/style.css";
 import { createFlowNode } from "../_lib/create-workflow-node";
 import { TaskType } from "@/types/flow-node";
 import NodeComponent from "./nodes/node-component";
-import { useTheme } from "next-themes";
+import ComponentsBar from "./components-bar";
+import TopBar from "./top-bar";
 
 const nodeType = {
   FlowScrapeNode: NodeComponent,
@@ -23,7 +24,6 @@ const fitViewOptions = { padding: 1, duration: 200 };
 
 const Editor = () => {
   const id = useParams().id as string;
-  const { theme } = useTheme();
   const [nodes, setNodes, onNodesChange] = useNodesState([
     createFlowNode({ nodeType: TaskType.LAUNCH_BROWSER }),
     createFlowNode({ nodeType: TaskType.LAUNCH_BROWSER }),
@@ -36,6 +36,8 @@ const Editor = () => {
 
   return (
     <div className="size-full">
+      <ComponentsBar />
+      <TopBar />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -48,9 +50,9 @@ const Editor = () => {
         fitViewOptions={fitViewOptions}
       >
         <Controls
-          position="bottom-left"
-          orientation="horizontal"
-          className="text-black pl-10 pb-4"
+          position="top-left"
+          orientation="vertical"
+          className="text-black !left-16"
           fitViewOptions={fitViewOptions}
         />
         <Background />
