@@ -13,7 +13,6 @@ import "@xyflow/react/dist/style.css";
 import { createFlowNode } from "../_lib/create-workflow-node";
 import { TaskType } from "@/types/flow-node";
 import NodeComponent from "./nodes/node-component";
-import ComponentsBar from "./components-bar";
 import TopBar from "./top-bar";
 
 const nodeType = {
@@ -35,8 +34,7 @@ const Editor = () => {
   if (!id) return;
 
   return (
-    <div className="size-full">
-      <ComponentsBar />
+    <div className="size-full ">
       <TopBar />
       <ReactFlow
         nodes={nodes}
@@ -52,7 +50,7 @@ const Editor = () => {
         <Controls
           position="top-left"
           orientation="vertical"
-          className="text-black !left-16"
+          className="text-black"
           fitViewOptions={fitViewOptions}
         />
         <Background />

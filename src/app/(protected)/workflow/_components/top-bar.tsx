@@ -16,8 +16,8 @@ const TopBar = () => {
   }, []);
 
   return (
-    <header className="absolute w-full z-10 pt-2 h-16 group">
-      <div className="relative flex items-center justify-center w-full h-full">
+    <header className="absolute w-full z-10 pt-2 h-16 top-0 flex items-center justify-center pointer-events-none">
+      <div className="relative flex items-center justify-center w-[30rem] h-full group pointer-events-auto">
         <div
           className={cn(
             "absolute p-2 dark:bg-[#171717] bg-[#FAFAFA] border rounded-sm min-w-60 transition-all duration-300 group-hover:top-0",
