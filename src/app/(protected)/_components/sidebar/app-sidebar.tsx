@@ -8,7 +8,6 @@ import {
   Search,
   Settings,
   Sun,
-  X,
 } from "lucide-react";
 
 import {
@@ -20,12 +19,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import SidebarContextProvider from "./sidebar-context-provider";
 
 // Menu items.
 const items = [
@@ -59,6 +60,7 @@ const items = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const { setTheme, theme } = useTheme();
+
   return (
     <div className="absolute left-0 top-0 w-fit z-50">
       <Sidebar collapsible="icon">
