@@ -17,10 +17,8 @@ const StringParam = ({ param, updateNodeParamValue, value }: ParamProps) => {
         value={nodeValue}
         onChange={(e) => setNodeValue(e.target.value)}
         onBlur={() => updateNodeParamValue(nodeValue)}
+        placeholder={param.helperText}
       />
-      {param.helperText && (
-        <p className="text-muted-foreground text-xs">{param.helperText}</p>
-      )}
     </div>
   );
 };
