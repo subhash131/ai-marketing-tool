@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { TaskParam } from "@/types/flow-node";
 import { Handle, Position } from "@xyflow/react";
 import React from "react";
+import NodeParamField from "./node-param-field";
 
 const NodeBody = ({ children }: { children: React.ReactNode }) => {
   return <div className="border-b flex flex-col gap-1">{children}</div>;
@@ -9,19 +10,15 @@ const NodeBody = ({ children }: { children: React.ReactNode }) => {
 export default NodeBody;
 
 export const NodeInput = ({
-  input: { name, type, helperText, required, hideHandle, value },
+  input,
+  nodeId,
 }: {
   input: TaskParam;
+  nodeId: string;
 }) => {
   return (
     <div className="p-2 relative">
-      <pre className="text-xs">
-        {JSON.stringify(
-          { name, type, helperText, required, hideHandle, value },
-          null,
-          2
-        )}
-      </pre>
+      <NodeParamField param={input} nodeId={nodeId} />
       <Handle
         id={"ssubas"}
         type="source"

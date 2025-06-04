@@ -9,7 +9,6 @@ type props = {
 
 const NodeHeader = ({ taskType }: props) => {
   const task = TaskRegistry[taskType];
-  console.log(task);
   return (
     <div className="w-full flex flex-col border-b gap-2 cursor-grab active:cursor-grabbing drag-handle p-2">
       <div className=" flex items-center justify-between">

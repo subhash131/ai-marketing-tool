@@ -27,3 +27,9 @@ export interface FlowNodeData {
 export interface FlowNode extends Node {
   data: FlowNodeData;
 }
+
+export interface ParamProps {
+  param: TaskParam;
+  value: string;
+  updateNodeParamValue: (newValue: string) => void;
+}
