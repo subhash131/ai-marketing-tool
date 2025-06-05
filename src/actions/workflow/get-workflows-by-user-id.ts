@@ -1,9 +1,9 @@
 "use server";
 
-export async function getWorkflowByUser(userId: string) {
+export async function getWorkflowsByUserId(userId: string) {
   try {
     const BASE_URL = process.env.BASE_URL;
-    const res = await fetch(`${BASE_URL}/workflow?userId=${userId}`);
+    const res = await fetch(`${BASE_URL}/workflows?userId=${userId}`);
     const data = await res.json();
     return data;
   } catch (e) {
