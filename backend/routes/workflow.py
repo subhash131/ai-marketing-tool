@@ -1,14 +1,29 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,Query
 from models.workflow import Workflow
 from models.workflow import WorkflowUpdate
-from serializer.workflow import serialize_workflow
+from serializer.workflow import serialize_workflow, serialize_workflows
 from bson import ObjectId
 from db import db
 
 router = APIRouter()
 
+@router.get("/workflows")
+async def get_workflows_by_user_id(userId: str = Query(..., description="User ID (ObjectId)")):
+    try:
+        print(userId)
+        workflows_cursor = db.workflows.find({"userId": userId})
+        workflows = await workflows_cursor.to_list(length=None)
+
+        if not workflows:
+            raise HTTPException(status_code=404, detail="No workflows found for the given userId")
+        return serialize_workflows(workflows)
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/workflow/{workflow_id}")
-async def get_workflow(workflow_id: str):
+async def get_workflow_by_id(workflow_id: str):
     workflow = await db.workflows.find_one({"_id": ObjectId(workflow_id)})
     return serialize_workflow(workflow)
 

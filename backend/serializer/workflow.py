@@ -16,3 +16,6 @@ def serialize_workflow(workflow) -> dict:
         "createdAt": workflow["createdAt"],
         "updatedAt": workflow["updatedAt"]
     }
+
+def serialize_workflows(workflows: list[dict]) -> list[dict]:
+    return [serialize_workflow(wf) for wf in workflows]
