@@ -38,10 +38,8 @@ const TopBar = ({
         >
           <div className="flex items-center justify-between w-full ">
             <div>
-              <p className="text-sm">{title}subhash</p>
-              <p className="text-xs text-muted-foreground">
-                {subtitle}asuhdjah
-              </p>
+              <p className="text-sm">{title}</p>
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
             </div>
             <div className="flex items-center gap-1">
               {/* TODO:: */}

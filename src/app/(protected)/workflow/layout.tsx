@@ -1,10 +1,10 @@
 import React from "react";
-import ComponentsBar from "./_components/components-bar";
+import TaskComponentsBar from "./_components/components-bar";
 
 const WorkflowLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-screen w-full">
-      <ComponentsBar />
+      <TaskComponentsBar />
       {children}
     </div>
   );

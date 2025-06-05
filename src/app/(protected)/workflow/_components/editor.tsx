@@ -8,7 +8,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import { useParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import "@xyflow/react/dist/style.css";
 import NodeComponent from "./nodes/node-component";
@@ -16,6 +16,8 @@ import TopBar from "./top-bar";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkflowById } from "@/actions/workflow/get-workflow-by-id";
 import { toast } from "sonner";
+import { createFlowNode } from "../_lib/create-workflow-node";
+import { FlowNode, TaskType } from "@/types/flow-node";
 
 const nodeType = {
   FlowScrapeNode: NodeComponent,
@@ -29,15 +31,9 @@ const Editor = () => {
     queryKey: ["workflow", id],
     queryFn: () => getWorkflowById({ workflowId: id }),
   });
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([
-    {
-      source: "63206bc4-1f82-4c88-acea-233ca780d16c",
-      target: "fdac490b-fab5-4344-9c6d-6f5e35385b56",
-      id: "63206bc4-1f82-4c88-acea-6f5e35385b56",
-    },
-  ]);
-  const { setViewport } = useReactFlow();
+  const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { setViewport, screenToFlowPosition } = useReactFlow();
 
   useEffect(() => {
     if (isError) toast.error("Failed to load workflow!");
@@ -57,12 +53,27 @@ const Editor = () => {
     }
   }, [isLoading, isPending, data, isError]);
 
-  if (!id) return;
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  }, []);
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const taskType = e.dataTransfer.getData("application/reactflow");
+    if (!taskType) return;
+    const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
 
+    const newNode = createFlowNode({
+      nodeType: taskType as TaskType,
+      position,
+    });
+    setNodes((nds) => nds.concat(newNode));
+  }, []);
+
+  if (!id) return;
   return (
     <div className="size-full ">
-      {/* TODO:: */}
-      <TopBar title="" subtitle="" workflowId={id} />
+      <TopBar title={data?.name || "untitled"} subtitle="" workflowId={id} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -73,6 +84,8 @@ const Editor = () => {
         nodeTypes={nodeType}
         fitViewOptions={fitViewOptions}
         fitView
+        onDragOver={onDragOver}
+        onDrop={onDrop}
       >
         <Controls
           position="top-left"
