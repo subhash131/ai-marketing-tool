@@ -26,7 +26,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import SidebarContextProvider from "./sidebar-context-provider";
 
 // Menu items.
 const items = [

@@ -8,10 +8,14 @@ const SidebarContextProvider = async ({
   children: React.ReactNode;
 }) => {
   const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const defaultOpen =
+    cookieStore.get("app-sidebar-sidebar_state")?.value === "true";
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>{children}</SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen} name="app-sidebar">
+      {children}
+    </SidebarProvider>
   );
 };
+4;
 
 export default SidebarContextProvider;

@@ -1,11 +1,12 @@
 export type Workflow = {
+  id?: string;
   userId: string;
   name: string;
   description?: string;
   definition: string;
   executionPlan?: string;
   cron?: string;
-  status: WorkflowStatus;
+  status?: WorkflowStatus;
   creditsCost?: number;
   lastRunAt?: string;
   lastRunId?: string;
@@ -15,11 +16,13 @@ export type Workflow = {
   updatedAt?: string;
 };
 
-export type WorkflowStatus = {
-  DRAFT: "DRAFT";
-  PENDING: "PENDING";
-  RUNNING: "RUNNING";
-  COMPILED: "COMPILED";
-  COMPLETED: "COMPLETED";
-  FAILED: "FAILED";
-};
+export const WorkflowStatus = {
+  DRAFT: "DRAFT",
+  PENDING: "PENDING",
+  RUNNING: "RUNNING",
+  COMPILED: "COMPILED",
+  COMPLETED: "COMPLETED",
+  FAILED: "FAILED",
+} as const;
+
+export type WorkflowStatus = keyof typeof WorkflowStatus;

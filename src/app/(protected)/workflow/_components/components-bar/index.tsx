@@ -52,7 +52,7 @@ const ComponentsBar = () => {
   return (
     <ComponentBarProvider>
       <div className="absolute size-fit right-2 top-2 rounded-tr-md w-fit z-50 cursor-pointer items-center justify-center">
-        <SidebarTrigger className="cursor-pointer dark:bg-[#171717] border px-4 w-60 h-10 gap-4 flex items-center">
+        <SidebarTrigger className="cursor-pointer bg-sidebar border px-4 w-60 h-10 gap-4 flex items-center">
           COMPONENTS <PanelRight />
         </SidebarTrigger>
       </div>

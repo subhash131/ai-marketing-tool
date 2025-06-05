@@ -32,7 +32,7 @@ const TopBar = ({
       <div className="relative flex items-center justify-center w-[30rem] h-full group pointer-events-auto">
         <div
           className={cn(
-            "absolute p-2 dark:bg-[#171717] bg-[#FAFAFA] border rounded-sm min-w-60 transition-all duration-300 group-hover:top-0",
+            "absolute p-2 bg-sidebar border rounded-sm min-w-60 transition-all duration-300 group-hover:top-0",
             `${show ? "top-0" : "-top-20"}`
           )}
         >
