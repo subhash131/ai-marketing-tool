@@ -30,7 +30,13 @@ const Editor = () => {
     queryFn: () => getWorkflowById({ workflowId: id }),
   });
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([
+    {
+      source: "63206bc4-1f82-4c88-acea-233ca780d16c",
+      target: "fdac490b-fab5-4344-9c6d-6f5e35385b56",
+      id: "63206bc4-1f82-4c88-acea-6f5e35385b56",
+    },
+  ]);
   const { setViewport } = useReactFlow();
 
   useEffect(() => {

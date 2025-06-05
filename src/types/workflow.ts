@@ -16,13 +16,11 @@ export type Workflow = {
   updatedAt?: string;
 };
 
-export const WorkflowStatus = {
-  DRAFT: "DRAFT",
-  PENDING: "PENDING",
-  RUNNING: "RUNNING",
-  COMPILED: "COMPILED",
-  COMPLETED: "COMPLETED",
-  FAILED: "FAILED",
-} as const;
-
-export type WorkflowStatus = keyof typeof WorkflowStatus;
+export enum WorkflowStatus {
+  DRAFT = "DRAFT",
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPILED = "COMPILED",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
