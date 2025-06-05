@@ -1,0 +1,6 @@
+import { TaskParamType } from "@/types/flow-node";
+
+export const ColorForHandle: Record<TaskParamType, string> = {
+  [TaskParamType.BROWSER_INSTANCE]: "!bg-sky-400",
+  [TaskParamType.STRING]: "!bg-amber-400",
+};

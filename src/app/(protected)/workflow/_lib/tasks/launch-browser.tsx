@@ -8,7 +8,7 @@ export const LaunchBrowserTask = {
     <Globe className="stroke-pink-500" {...props} />
   ),
   isEntryPoint: true,
-  input: [
+  inputs: [
     {
       name: "website url",
       type: TaskParamType.STRING,
@@ -17,7 +17,7 @@ export const LaunchBrowserTask = {
       hideHandle: true,
     },
   ],
-  output: [
+  outputs: [
     {
       name: "Web page",
       type: TaskParamType.BROWSER_INSTANCE,
