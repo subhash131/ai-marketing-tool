@@ -1,6 +1,6 @@
 "use server";
 
-export const updateWorkflowDefinition = async ({
+export const getWorkflowById = async ({
   workflowId,
 }: {
   workflowId: string;
