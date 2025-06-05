@@ -1,8 +1,8 @@
 import { Node } from "@xyflow/react";
 
 export enum TaskType {
-  "LAUNCH_BROWSER" = "LAUNCH_BROWSER",
-  "PAGE_TO_HTML" = "PAGE_TO_HTML",
+  LAUNCH_BROWSER = "LAUNCH_BROWSER",
+  PAGE_TO_HTML = "PAGE_TO_HTML",
 }
 
 export enum TaskParamType {
