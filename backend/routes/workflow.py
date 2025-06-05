@@ -24,8 +24,13 @@ async def get_workflows_by_user_id(userId: str = Query(..., description="User ID
 
 @router.get("/workflow/{workflow_id}")
 async def get_workflow_by_id(workflow_id: str):
+    if not ObjectId.is_valid(workflow_id):
+        raise HTTPException(status_code=400, detail="Invalid workflow ID format")
     workflow = await db.workflows.find_one({"_id": ObjectId(workflow_id)})
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
     return serialize_workflow(workflow)
+
 
 @router.post("/workflow")
 async def create_workflow(workflow: Workflow):
