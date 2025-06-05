@@ -25,7 +25,7 @@ const fitViewOptions = { padding: 1, duration: 200 };
 
 const Editor = () => {
   const id = useParams().id as string;
-  const { data, isLoading, isFetched } = useQuery({
+  const { data, isLoading, isFetched, isError } = useQuery({
     queryKey: ["workflow", id],
     queryFn: () => getWorkflowById({ workflowId: id }),
   });
@@ -34,6 +34,7 @@ const Editor = () => {
   const { setViewport } = useReactFlow();
 
   useEffect(() => {
+    if (isError) toast.error("Failed to load workflow!");
     if (isLoading) toast.loading("loading...", { id: "loading-workflow" });
     if (isFetched) toast.dismiss("loading-workflow");
     if (!data || !data.definition) return;
@@ -48,7 +49,7 @@ const Editor = () => {
     } catch (e) {
       console.log(e);
     }
-  }, [isLoading, isFetched, data]);
+  }, [isLoading, isFetched, data, isError]);
 
   if (!id) return;
 

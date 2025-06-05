@@ -1,7 +1,8 @@
 import React from "react";
+import Workflows from "./_components/workflows";
 
 const WorkflowPage = () => {
-  return <div />;
+  return <Workflows />;
 };
 
 export default WorkflowPage;
