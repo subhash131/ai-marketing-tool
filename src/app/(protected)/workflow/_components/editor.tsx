@@ -5,15 +5,17 @@ import {
   ReactFlow,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 import "@xyflow/react/dist/style.css";
-import { createFlowNode } from "../_lib/create-workflow-node";
-import { TaskType } from "@/types/flow-node";
 import NodeComponent from "./nodes/node-component";
 import TopBar from "./top-bar";
+import { useQuery } from "@tanstack/react-query";
+import { getWorkflowById } from "@/actions/workflow/get-workflow-by-id";
+import { toast } from "sonner";
 
 const nodeType = {
   FlowScrapeNode: NodeComponent,
@@ -23,19 +25,37 @@ const fitViewOptions = { padding: 1, duration: 200 };
 
 const Editor = () => {
   const id = useParams().id as string;
-  const [nodes, setNodes, onNodesChange] = useNodesState([
-    createFlowNode({ nodeType: TaskType.LAUNCH_BROWSER }),
-    createFlowNode({ nodeType: TaskType.LAUNCH_BROWSER }),
-  ]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([
-    { id: "1", source: "1", target: "2" },
-  ]);
+  const { data, isLoading, isFetched } = useQuery({
+    queryKey: ["workflow", id],
+    queryFn: () => getWorkflowById({ workflowId: id }),
+  });
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { setViewport } = useReactFlow();
+
+  useEffect(() => {
+    if (isLoading) toast.loading("loading...", { id: "loading-workflow" });
+    if (isFetched) toast.dismiss("loading-workflow");
+    if (!data || !data.definition) return;
+
+    try {
+      const flow = JSON.parse(data?.definition);
+      setNodes(flow.nodes || []);
+      setEdges(flow.edges || []);
+      if (!flow.viewport) return;
+      const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+      setViewport({ x, y, zoom });
+    } catch (e) {
+      console.log(e);
+    }
+  }, [isLoading, isFetched, data]);
 
   if (!id) return;
 
   return (
     <div className="size-full ">
-      <TopBar />
+      {/* TODO:: */}
+      <TopBar title="" subtitle="" workflowId={id} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -44,8 +64,8 @@ const Editor = () => {
         id={id}
         className="bg-red-500"
         nodeTypes={nodeType}
-        fitView
         fitViewOptions={fitViewOptions}
+        fitView
       >
         <Controls
           position="top-left"

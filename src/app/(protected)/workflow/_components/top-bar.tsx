@@ -1,14 +1,26 @@
+"use client";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { FolderOpen, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import SaveWorkflow from "./save-workflow";
 
-const TopBar = () => {
+const TopBar = ({
+  title,
+  subtitle,
+  workflowId,
+}: {
+  title: string;
+  workflowId: string;
+  subtitle?: string;
+}) => {
   const [show, setShow] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setShow(false), 5000);
@@ -26,19 +38,28 @@ const TopBar = () => {
         >
           <div className="flex items-center justify-between w-full ">
             <div>
-              <p className="text-sm">Title</p>
-              <p className="text-xs text-muted-foreground">Subtitle</p>
+              <p className="text-sm">{title}subhash</p>
+              <p className="text-xs text-muted-foreground">
+                {subtitle}asuhdjah
+              </p>
             </div>
-            <Tooltip>
-              <TooltipTrigger>
-                <div className="cursor-pointer p-1 bg-transparent">
-                  <X />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Exit</p>
-              </TooltipContent>
-            </Tooltip>
+            <div className="flex items-center gap-1">
+              {/* TODO:: */}
+              <SaveWorkflow workflowId={workflowId} />
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    className="cursor-pointer p-2 bg-muted rounded-md"
+                    onClick={() => router.back()}
+                  >
+                    <X size={20} />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Exit</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>
