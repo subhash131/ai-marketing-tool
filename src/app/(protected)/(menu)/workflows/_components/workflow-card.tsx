@@ -1,9 +1,18 @@
+import { deleteWorkflow } from "@/actions/workflow/delete-workflow";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { parseTimestamp } from "@/lib/utils";
 import { Workflow } from "@/types/workflow";
-import { Logs, Pencil } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Logs, Menu, Pencil } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 const WorkflowCard = ({
   description,
@@ -14,6 +23,27 @@ const WorkflowCard = ({
   lastRunStatus,
   id,
 }: Workflow) => {
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteWorkflow,
+    onError: (e) => {
+      toast.error(e.message);
+    },
+    onSuccess: (e) => {
+      toast.success(e.data.message);
+      queryClient.invalidateQueries({
+        queryKey: ["workflows"],
+      });
+    },
+    onSettled: () => {
+      toast.dismiss(`delete-${id}`);
+    },
+  });
+
+  useEffect(() => {
+    if (isPending) toast.loading(`Deleting ${name}`, { id: `delete-${id}` });
+  }, [isPending]);
+
   return (
     <div className="rounded-md h-60 p-1 bg-sidebar-accent shadow hover:rotate-1 transition-transform">
       <div className="bg-sidebar size-full rounded-sm border p-2 flex flex-col justify-between">
@@ -40,9 +70,26 @@ const WorkflowCard = ({
                 Edit <Pencil />
               </Link>
             </Button>
-            <Button className="cursor-pointer bg-sidebar-accent text-accent-foreground border hover:bg-accent">
-              Logs <Logs />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="cursor-pointer">
+                <Button variant="outline" size="icon">
+                  <Menu />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className="cursor-pointer">
+                  Execution logs
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    mutate({ workflowId: id! });
+                  }}
+                  className="text-red-500 hover:!text-red-500 cursor-pointer"
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

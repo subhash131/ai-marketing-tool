@@ -27,8 +27,8 @@ export const createWorkflow = async ({
       lastRunStatus: "string",
       nextRunAt: "2025-06-05T15:45:31.953Z",
 
-      createdAt: "2025-06-05T15:50:28.446Z",
-      updatedAt: "2025-06-05T15:50:28.446Z",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     console.log("workflow", workflow);

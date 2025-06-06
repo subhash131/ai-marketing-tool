@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/workflows")
 async def get_workflows_by_user_id(userId: str = Query(..., description="User ID (ObjectId)")):
     try:
-        workflows_cursor = db.workflows.find({"userId": userId})
+        workflows_cursor = db.workflows.find({"userId": userId}).sort("createdAt", -1)
         workflows = await workflows_cursor.to_list(length=None)
 
         if not workflows:
