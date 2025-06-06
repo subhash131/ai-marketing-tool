@@ -1,7 +1,10 @@
 "use client";
 import {
+  addEdge,
   Background,
+  Connection,
   Controls,
+  Edge,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -18,9 +21,13 @@ import { getWorkflowById } from "@/actions/workflow/get-workflow-by-id";
 import { toast } from "sonner";
 import { createFlowNode } from "../_lib/create-workflow-node";
 import { FlowNode, TaskType } from "@/types/flow-node";
+import DeletableEdge from "./edges/deletable-edge";
 
 const nodeType = {
   FlowScrapeNode: NodeComponent,
+};
+const edgeType = {
+  default: DeletableEdge,
 };
 
 const fitViewOptions = { padding: 1, duration: 200 };
@@ -32,7 +39,7 @@ const Editor = () => {
     queryFn: () => getWorkflowById({ workflowId: id }),
   });
   const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { setViewport, screenToFlowPosition } = useReactFlow();
 
   useEffect(() => {
@@ -70,6 +77,10 @@ const Editor = () => {
     setNodes((nds) => nds.concat(newNode));
   }, []);
 
+  const onConnect = useCallback((connection: Connection) => {
+    setEdges((edge) => addEdge({ ...connection, animated: true }, edge));
+  }, []);
+
   if (!id) return;
   return (
     <div className="size-full ">
@@ -77,6 +88,7 @@ const Editor = () => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        edgeTypes={edgeType}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         id={id}
@@ -86,6 +98,7 @@ const Editor = () => {
         fitView
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onConnect={onConnect}
       >
         <Controls
           position="top-left"
