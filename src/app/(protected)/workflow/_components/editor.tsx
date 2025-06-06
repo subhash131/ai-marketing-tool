@@ -82,8 +82,6 @@ const Editor = () => {
     (connection: Connection) => {
       setEdges((edge) => addEdge({ ...connection, animated: true }, edge));
       if (!connection.targetHandle) return;
-      console.log("connection ::", connection);
-      console.log({ nodes });
       const node = nodes.find((nd) => nd.id === connection.target);
       if (!node) return;
       const nodeInputs = node.data.inputs;
@@ -91,7 +89,7 @@ const Editor = () => {
         inputs: { ...nodeInputs, [connection.targetHandle]: "" },
       });
     },
-    [setEdges, updateNodeData]
+    [setEdges, updateNodeData, nodes]
   );
 
   if (!id) return;
