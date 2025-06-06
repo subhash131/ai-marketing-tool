@@ -1,14 +1,11 @@
 "use client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { cn } from "@/lib/utils";
-import { FolderOpen, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import SaveWorkflow from "./save-workflow";
+import ExecuteWorkflow from "./execute-workflow";
+import ExitEditor from "./exit-editor";
 
 const TopBar = ({
   title,
@@ -20,7 +17,6 @@ const TopBar = ({
   subtitle?: string;
 }) => {
   const [show, setShow] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setShow(false), 5000);
@@ -29,7 +25,7 @@ const TopBar = ({
 
   return (
     <header className="absolute w-full z-10 pt-2 h-16 top-0 flex items-center justify-center pointer-events-none">
-      <div className="relative flex items-center justify-center w-[30rem] h-full group pointer-events-auto">
+      <div className="relative flex items-center justify-center w-96 h-full group pointer-events-auto">
         <div
           className={cn(
             "absolute p-2 bg-sidebar border rounded-sm min-w-60 transition-all duration-300 group-hover:top-0",
@@ -44,19 +40,8 @@ const TopBar = ({
             <div className="flex items-center gap-1">
               {/* TODO:: */}
               <SaveWorkflow workflowId={workflowId} />
-              <Tooltip>
-                <TooltipTrigger>
-                  <div
-                    className="cursor-pointer p-2 bg-muted rounded-md"
-                    onClick={() => router.back()}
-                  >
-                    <X size={20} />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Exit</p>
-                </TooltipContent>
-              </Tooltip>
+              <ExecuteWorkflow />
+              <ExitEditor />
             </div>
           </div>
         </div>
