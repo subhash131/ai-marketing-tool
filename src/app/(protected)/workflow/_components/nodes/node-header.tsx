@@ -1,29 +1,56 @@
-import { TaskType } from "@/types/flow-node";
+import { FlowNode, TaskType } from "@/types/flow-node";
 import React from "react";
 import { TaskRegistry } from "../../_lib/registry/task-registry";
-import { Check, Globe, Play } from "lucide-react";
+import { Trash, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useReactFlow } from "@xyflow/react";
+import { createFlowNode } from "../../_lib/create-workflow-node";
 
 type props = {
   taskType: TaskType;
+  nodeId: string;
 };
 
-const NodeHeader = ({ taskType }: props) => {
+const NodeHeader = ({ taskType, nodeId }: props) => {
   const task = TaskRegistry[taskType];
+  const { deleteElements, getNode, addNodes } = useReactFlow();
   return (
     <div className="w-full flex flex-col border-b gap-2 cursor-grab active:cursor-grabbing drag-handle p-2">
       <div className=" flex items-center justify-between">
         <div className="flex items-center justify-center gap-2">
-          <Globe size={14} />
+          <task.icon size={14} />
           <p className="text-sm">{task.label}</p>
         </div>
-        <div className="flex items-center justify-center gap-2">
-          <div className="relative text-green-500 px-1 py-0.5 overflow-hidden rounded-xs">
-            <span className="size-full absolute top-0 left-0 bg-green-500 opacity-30" />
-            <Check size={14} />
-          </div>
-          <button className="px-1 py-0.5">
-            <Play size={14} />
-          </button>
+        <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            className="relative text-red-500 overflow-hidden disabled:opacity-100 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteElements({ nodes: [{ id: nodeId }] });
+            }}
+          >
+            <span className="size-full absolute top-0 left-0 hover:bg-red-500 opacity-30" />
+            <Trash size={14} />
+          </Button>
+          <Button
+            variant="ghost"
+            className="cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              const node = getNode(nodeId) as FlowNode;
+              const nodeWidth = node.measured?.width!;
+              const x = node.position.x + nodeWidth + 40;
+              const y = node.position.y;
+              const newNode = createFlowNode({
+                nodeType: node.data.type,
+                position: { x, y },
+              });
+              addNodes([newNode]);
+            }}
+          >
+            <Copy size={14} />
+          </Button>
         </div>
       </div>
       <div>

@@ -12,7 +12,7 @@ const NodeComponent = memo((props: NodeProps) => {
   const task = TaskRegistry[data.type];
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
-      <NodeHeader taskType={data.type} />
+      <NodeHeader taskType={data.type} nodeId={props.id} />
       <NodeInputs>
         {task.inputs.map((input) => {
           return <NodeInput input={input} key={input.name} nodeId={props.id} />;

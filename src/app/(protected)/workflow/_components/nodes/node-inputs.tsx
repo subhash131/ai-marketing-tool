@@ -27,6 +27,7 @@ export const NodeInput = ({
       <NodeParamField param={input} nodeId={nodeId} disabled={isConnected} />
       <Handle
         id={input.name}
+        isConnectable={!isConnected}
         type="target"
         position={Position.Left}
         className={cn(

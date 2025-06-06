@@ -5,6 +5,7 @@ import {
   Connection,
   Controls,
   Edge,
+  getOutgoers,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -22,6 +23,7 @@ import { toast } from "sonner";
 import { createFlowNode } from "../_lib/create-workflow-node";
 import { FlowNode, TaskType } from "@/types/flow-node";
 import DeletableEdge from "./edges/deletable-edge";
+import { TaskRegistry } from "../_lib/registry/task-registry";
 
 const nodeType = {
   FlowScrapeNode: NodeComponent,
@@ -94,6 +96,39 @@ const Editor = () => {
     },
     [setEdges, updateNodeData, nodes]
   );
+  const isValidConnection = useCallback(
+    (connection: Edge | Connection) => {
+      if (connection.source === connection.target) return false;
+      const source = nodes.find((nd) => nd.id === connection.source);
+      const target = nodes.find((nd) => nd.id === connection.target);
+      if (!source || !target) return false;
+
+      const sourceTask = TaskRegistry[source.data.type];
+      const targetTask = TaskRegistry[target.data.type];
+      const output = sourceTask.outputs.find(
+        (output) => output.name === connection.sourceHandle
+      );
+      const input = targetTask.inputs.find(
+        (input) => input.name === connection.targetHandle
+      );
+
+      if (input?.type !== output?.type) return false;
+
+      const hasCycle = (node: FlowNode, visited = new Set()) => {
+        if (visited.has(node.id)) return false;
+        visited.add(node.id);
+
+        for (const outgoers of getOutgoers(node, nodes, edges)) {
+          if (outgoers.id === connection.source) return true;
+          if (hasCycle(outgoers, visited)) return true;
+        }
+      };
+
+      const detectedCycle = hasCycle(target);
+      return !detectedCycle;
+    },
+    [nodes, edges]
+  );
 
   if (!id) return;
   return (
@@ -113,6 +148,7 @@ const Editor = () => {
         onDragOver={onDragOver}
         onDrop={onDrop}
         onConnect={onConnect}
+        isValidConnection={isValidConnection}
       >
         <Controls
           position="top-left"

@@ -4,9 +4,7 @@ import { Globe, LucideProps } from "lucide-react";
 export const LaunchBrowserTask = {
   type: TaskType.LAUNCH_BROWSER,
   label: "Launch Browser",
-  icon: (props: LucideProps) => (
-    <Globe className="stroke-pink-500" {...props} />
-  ),
+  icon: (props: LucideProps) => <Globe {...props} />,
   isEntryPoint: true,
   inputs: [
     {
