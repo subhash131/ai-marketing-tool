@@ -37,6 +37,16 @@ async def create_workflow(workflow: Workflow):
     result = await db.workflows.insert_one(workflow_dict)
     return {"id": str(result.inserted_id)}
 
+@router.delete("/workflow")
+async def delete_workflow(workflowId: str):
+    try:
+        result = await db.workflows.find_one_and_delete({"_id": ObjectId(workflowId)})
+        if result is None:
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        return {"message": "Workflow deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 @router.patch("/workflow/{workflow_id}")
 async def update_workflow(workflow_id: str, workflow: WorkflowUpdate):
