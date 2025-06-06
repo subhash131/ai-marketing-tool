@@ -14,8 +14,8 @@ const NodeOutput = ({ output }: { output: TaskParam }) => {
     <div className="w-full h-fit relative p-2">
       <p className="text-xs text-muted-foreground">{output.name}</p>
       <Handle
-        id={"sb"}
-        type="target"
+        id={output.name}
+        type="source"
         position={Position.Right}
         className={cn(
           "!bg-muted-foreground !border-2 !border-background !size-4",

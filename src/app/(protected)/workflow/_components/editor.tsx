@@ -40,7 +40,7 @@ const Editor = () => {
   });
   const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { setViewport, screenToFlowPosition } = useReactFlow();
+  const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
 
   useEffect(() => {
     if (isError) toast.error("Failed to load workflow!");
@@ -64,6 +64,7 @@ const Editor = () => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   }, []);
+
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const taskType = e.dataTransfer.getData("application/reactflow");
@@ -77,9 +78,21 @@ const Editor = () => {
     setNodes((nds) => nds.concat(newNode));
   }, []);
 
-  const onConnect = useCallback((connection: Connection) => {
-    setEdges((edge) => addEdge({ ...connection, animated: true }, edge));
-  }, []);
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      setEdges((edge) => addEdge({ ...connection, animated: true }, edge));
+      if (!connection.targetHandle) return;
+      console.log("connection ::", connection);
+      console.log({ nodes });
+      const node = nodes.find((nd) => nd.id === connection.target);
+      if (!node) return;
+      const nodeInputs = node.data.inputs;
+      updateNodeData(node.id, {
+        inputs: { ...nodeInputs, [connection.targetHandle]: "" },
+      });
+    },
+    [setEdges, updateNodeData]
+  );
 
   if (!id) return;
   return (
