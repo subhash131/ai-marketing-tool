@@ -37,7 +37,7 @@ async def create_workflow(workflow: Workflow):
     result = await db.workflows.insert_one(workflow_dict)
     return {"id": str(result.inserted_id)}
 
-@router.delete("/workflow")
+@router.delete("/workflow/{workflowId}")
 async def delete_workflow(workflowId: str):
     try:
         result = await db.workflows.find_one_and_delete({"_id": ObjectId(workflowId)})
