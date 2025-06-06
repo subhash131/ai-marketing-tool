@@ -1,10 +1,9 @@
 import { cn } from "@/lib/utils";
 import { TaskParam } from "@/types/flow-node";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useEdges } from "@xyflow/react";
 import React from "react";
 import NodeParamField from "./node-param-field";
 import { ColorForHandle } from "./common";
-import { v4 as uuidv4 } from "uuid";
 
 const NodeInputs = ({ children }: { children: React.ReactNode }) => {
   return <div className="border-b flex flex-col gap-1">{children}</div>;
@@ -18,9 +17,14 @@ export const NodeInput = ({
   input: TaskParam;
   nodeId: string;
 }) => {
+  const edges = useEdges();
+  const isConnected = edges.some((edge) => {
+    return edge.target === nodeId && edge.targetHandle === input.name;
+  });
+
   return (
     <div className="p-2 relative">
-      <NodeParamField param={input} nodeId={nodeId} />
+      <NodeParamField param={input} nodeId={nodeId} disabled={isConnected} />
       <Handle
         id={input.name}
         type="target"

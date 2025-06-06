@@ -65,18 +65,21 @@ const Editor = () => {
     e.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const taskType = e.dataTransfer.getData("application/reactflow");
-    if (!taskType) return;
-    const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+  const onDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const taskType = e.dataTransfer.getData("application/reactflow");
+      if (!taskType) return;
+      const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
 
-    const newNode = createFlowNode({
-      nodeType: taskType as TaskType,
-      position,
-    });
-    setNodes((nds) => nds.concat(newNode));
-  }, []);
+      const newNode = createFlowNode({
+        nodeType: taskType as TaskType,
+        position,
+      });
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, setNodes]
+  );
 
   const onConnect = useCallback(
     (connection: Connection) => {

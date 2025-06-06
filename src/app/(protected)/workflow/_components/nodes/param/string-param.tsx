@@ -1,27 +1,42 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import React, { useEffect, useId, useState } from "react";
+import React, { ChangeEvent, useEffect, useId, useState } from "react";
 import { ParamProps } from "@/types/flow-node";
+import { Textarea } from "@/components/ui/textarea";
 
-const StringParam = ({ param, updateNodeParamValue, value }: ParamProps) => {
+const StringParam = ({
+  param,
+  updateNodeParamValue,
+  value,
+  disabled,
+}: ParamProps) => {
   const [nodeValue, setNodeValue] = useState(value);
   const id = useId();
 
   useEffect(() => {
     setNodeValue(value);
   }, [value]);
+
+  let Component: any = Input;
+  if (param.variant === "textarea") {
+    Component = Textarea;
+  }
+
   return (
     <div className="space-y-1 p-1 w-full">
       <Label htmlFor={id} className="text-sm flex">
         {param?.name}
         {param?.required && <span className="text-red-500">*</span>}
       </Label>
-      <Input
+      <Component
         id={id}
         value={nodeValue}
-        onChange={(e) => setNodeValue(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setNodeValue(e.target.value)
+        }
         onBlur={() => updateNodeParamValue(nodeValue)}
         placeholder={param.helperText}
+        disabled={disabled}
       />
     </div>
   );

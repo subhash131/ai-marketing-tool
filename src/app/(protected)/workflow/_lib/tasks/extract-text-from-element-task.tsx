@@ -11,6 +11,8 @@ export const ExtractTextFromElementTask = {
       name: "HTML",
       type: TaskParamType.STRING,
       required: true,
+      helperText: "Enter value",
+      variant: "textarea",
     },
     {
       name: "Selector",
