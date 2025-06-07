@@ -36,7 +36,7 @@ const StringParam = ({
           setNodeValue(e.target.value)
         }
         onBlur={() => updateNodeParamValue(nodeValue)}
-        placeholder={param.helperText}
+        placeholder={disabled ? "linked" : param.helperText}
         disabled={disabled}
         className={cn(disabled && "resize-none max-h-10", "!bg-background")}
       />
