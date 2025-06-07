@@ -38,7 +38,7 @@ const StringParam = ({
         onBlur={() => updateNodeParamValue(nodeValue)}
         placeholder={param.helperText}
         disabled={disabled}
-        className={cn(disabled && "resize-none max-h-10", "transition")}
+        className={cn(disabled && "resize-none max-h-10", "!bg-background")}
       />
     </div>
   );

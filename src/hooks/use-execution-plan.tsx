@@ -19,7 +19,7 @@ const useExecutionPlan = () => {
           toast.error("No entry point found");
           break;
         case FlowToExecutionPlanValidationError.INVALID_INPUTS:
-          toast.error("Not all inputs are provided");
+          toast.error("Some inputs are missing");
           if (error.invalidElements) setInvalidInputs(error.invalidElements);
           break;
         default:
