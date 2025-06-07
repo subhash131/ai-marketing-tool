@@ -10,7 +10,11 @@ type FlowValidationContextType = {
 };
 
 export const FlowValidationContext =
-  createContext<FlowValidationContextType | null>(null);
+  createContext<FlowValidationContextType | null>({
+    invalidInputs: [],
+    setInvalidInputs: () => {},
+    clearErrors: () => {},
+  });
 
 export function FlowValidationContextProvider({
   children,

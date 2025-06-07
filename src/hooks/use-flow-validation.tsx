@@ -8,5 +8,6 @@ export default function useFlowValidation() {
       "useFlowValidation must be used within a FlowValidationProvider"
     );
   }
+  console.log({ context });
   return context;
 }

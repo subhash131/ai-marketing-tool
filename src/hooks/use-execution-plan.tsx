@@ -13,14 +13,14 @@ const useExecutionPlan = () => {
   const { clearErrors, setInvalidInputs } = useFlowValidation();
 
   const handleError = useCallback(
-    (error: any) => {
-      switch (error.type) {
+    (error: FlowToExecutionPlan["error"]) => {
+      switch (error?.type) {
         case FlowToExecutionPlanValidationError.NO_ENTRY_POINT:
           toast.error("No entry point found");
           break;
         case FlowToExecutionPlanValidationError.INVALID_INPUTS:
           toast.error("Not all inputs are provided");
-          setInvalidInputs(error.invalidInputs);
+          if (error.invalidElements) setInvalidInputs(error.invalidElements);
           break;
         default:
           toast.error("Something went wrong");

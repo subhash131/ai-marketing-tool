@@ -7,11 +7,11 @@ import { Edge, getIncomers } from "@xyflow/react";
 import { TaskRegistry } from "./registry/task-registry";
 
 export enum FlowToExecutionPlanValidationError {
-  "NO_ENTRY_POINT",
-  "INVALID_INPUTS",
+  "NO_ENTRY_POINT" = "NO_ENTRY_POINT",
+  "INVALID_INPUTS" = "INVALID_INPUTS",
 }
 
-type FlowToExecutionPlan = {
+export type FlowToExecutionPlan = {
   executionPlan?: WorkFlowExecutionPlan;
   error?: {
     type: FlowToExecutionPlanValidationError;
