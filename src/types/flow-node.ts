@@ -37,3 +37,8 @@ export interface ParamProps {
   updateNodeParamValue: (newValue: string) => void;
   disabled?: boolean;
 }
+
+export type FlowNodeMissingInputs = {
+  nodeId: string;
+  inputs: string[];
+};

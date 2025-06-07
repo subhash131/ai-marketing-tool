@@ -1,4 +1,6 @@
 import { createWorkflow } from "@/actions/workflow/create-workflow";
+import { createFlowNode } from "@/app/(protected)/workflow/_lib/create-workflow-node";
+import { TaskType } from "@/types/flow-node";
 import { useMutation } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,7 +29,17 @@ const CreateWorkflow = () => {
   return (
     <div
       className="rounded-md h-60 p-1 bg-sidebar-accent shadow active:scale-98 transition-transform cursor-pointer"
-      onClick={() => mutate({ userId: "683c2c052507b4cdade10e0d" })}
+      onClick={() => {
+        const node = createFlowNode({
+          nodeType: TaskType.LAUNCH_BROWSER,
+          position: { x: 300, y: 300 },
+        });
+        mutate({
+          userId: "683c2c052507b4cdade10e0d",
+          initialNodes: [node],
+          initialEdges: [],
+        });
+      }}
     >
       <div className="bg-sidebar size-full rounded-sm border flex items-center justify-center flex-col gap-2">
         <Plus size={40} />

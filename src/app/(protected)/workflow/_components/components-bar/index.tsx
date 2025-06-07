@@ -30,17 +30,27 @@ const TaskComponentsBar = () => {
           <Accordion
             type="single"
             className="w-full"
+            collapsible
             defaultValue={"extraction"}
           >
             <AccordionItem value="extraction">
               <AccordionTrigger className="font-semibold px-2">
                 Web Scrapper
               </AccordionTrigger>
-              <AccordionContent className="flex flex-col gap-1">
-                <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML}></TaskMenuBtn>
-                <TaskMenuBtn
-                  taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT}
-                ></TaskMenuBtn>
+              <AccordionContent className="flex flex-col gap-1 text-balance transition-all">
+                <TaskMenuBtn taskType={TaskType.LAUNCH_BROWSER} />
+                <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
+                <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="demo">
+              <AccordionTrigger className="font-semibold px-2">
+                Web Scrapper
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-1 text-balance">
+                <TaskMenuBtn taskType={TaskType.LAUNCH_BROWSER} />
+                <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
+                <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>

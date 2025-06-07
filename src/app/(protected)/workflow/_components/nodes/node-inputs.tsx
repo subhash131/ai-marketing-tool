@@ -13,9 +13,11 @@ export default NodeInputs;
 export const NodeInput = ({
   input,
   nodeId,
+  isEntryPoint,
 }: {
   input: TaskParam;
   nodeId: string;
+  isEntryPoint: boolean;
 }) => {
   const edges = useEdges();
   const isConnected = edges.some((edge) => {
@@ -25,16 +27,19 @@ export const NodeInput = ({
   return (
     <div className="p-2 relative">
       <NodeParamField param={input} nodeId={nodeId} disabled={isConnected} />
-      <Handle
-        id={input.name}
-        isConnectable={!isConnected}
-        type="target"
-        position={Position.Left}
-        className={cn(
-          "!bg-muted-foreground !border-2 !border-background !size-4",
-          ColorForHandle[input.type]
-        )}
-      />
+
+      {!isEntryPoint && (
+        <Handle
+          id={input.name}
+          isConnectable={!isConnected}
+          type="target"
+          position={Position.Left}
+          className={cn(
+            "!bg-muted-foreground !border-2 !border-background !size-4",
+            ColorForHandle[input.type]
+          )}
+        />
+      )}
     </div>
   );
 };

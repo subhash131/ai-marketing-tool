@@ -1,16 +1,22 @@
 "use server";
+import { FlowNode } from "@/types/flow-node";
 import { Workflow, WorkflowStatus } from "@/types/workflow";
+import { Edge } from "@xyflow/react";
 
 export const createWorkflow = async ({
   userId,
+  initialNodes,
+  initialEdges,
 }: {
   userId: string;
+  initialNodes: FlowNode[];
+  initialEdges: Edge[];
 }): Promise<Workflow> => {
   try {
     const BACKEND_URL = process.env.BACKEND_URL;
     const initialWorkflow = {
-      nodes: [],
-      edges: [],
+      nodes: [...initialNodes],
+      edges: [...initialEdges],
     };
 
     const workflow: Workflow = {

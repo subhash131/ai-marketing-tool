@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import React, { ChangeEvent, useEffect, useId, useState } from "react";
 import { ParamProps } from "@/types/flow-node";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const StringParam = ({
   param,
@@ -37,6 +38,7 @@ const StringParam = ({
         onBlur={() => updateNodeParamValue(nodeValue)}
         placeholder={param.helperText}
         disabled={disabled}
+        className={cn(disabled && "resize-none max-h-10", "transition")}
       />
     </div>
   );
