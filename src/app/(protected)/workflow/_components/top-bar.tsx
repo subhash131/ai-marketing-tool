@@ -40,7 +40,7 @@ const TopBar = ({
             <div className="flex items-center gap-1">
               {/* TODO:: */}
               <SaveWorkflow workflowId={workflowId} />
-              <ExecuteWorkflow />
+              <ExecuteWorkflow workflowId={workflowId} />
               <ExitEditor />
             </div>
           </div>
