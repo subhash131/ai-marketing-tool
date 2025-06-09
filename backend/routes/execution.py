@@ -1,10 +1,33 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 from models.execution import WorkflowExecution, ExecutionPhase, ExecutionLog
-from serializer.execution import serialize_execution
+from serializer.execution import serialize_execution,serialize_phase
 from bson import ObjectId
 from db import db
 
 router = APIRouter()
+
+@router.get("/execution/{execution_id}")
+async def get_workflow_by_id(execution_id: str):
+    if not ObjectId.is_valid(execution_id):
+        raise HTTPException(status_code=400, detail="Invalid execution ID format")
+
+    execution = await db.workflowexecutions.find_one({"_id": ObjectId(execution_id)})
+    if not execution:
+        raise HTTPException(status_code=404, detail="execution not found")
+
+    phase_ids = execution.get("phases", [])
+    if phase_ids:
+        phases_cursor = db.executionphases.find({"_id": {"$in": phase_ids}}).sort("number", 1)
+        phases = [serialize_phase(phase) async for phase in phases_cursor]
+        execution["phases"] = phases
+    else:
+        execution["phases"] = []
+
+    serialized_execution = serialize_execution(execution)
+    return serialized_execution
+
+
+    
 
 @router.post("/execution")
 async def create_execution(execution: WorkflowExecution, phases: list[ExecutionPhase]):
