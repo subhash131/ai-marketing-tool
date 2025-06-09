@@ -1,3 +1,4 @@
+"use client";
 import { runWorkflow } from "@/actions/workflow/run-workflow";
 import {
   Tooltip,
@@ -5,23 +6,27 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useExecutionPlan from "@/hooks/use-execution-plan";
+import { getUserLocalISOString } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useReactFlow } from "@xyflow/react";
 import { LoaderCircle, Play } from "lucide-react";
-import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import React from "react";
 import { toast } from "sonner";
 
 const ExecuteWorkflow = ({ workflowId }: { workflowId: string }) => {
   const generate = useExecutionPlan();
   const { toObject } = useReactFlow();
+  const router = useRouter();
 
   const { isPending, mutate } = useMutation({
     mutationFn: runWorkflow,
-    onSuccess: () => {
+    onSuccess: (redirectUrl: string) => {
       toast.success("Execution started", { id: "execute-workflow" });
+      router.push(redirectUrl);
     },
-    onError: () => {
-      toast.error("Something went wrong");
+    onError: (e) => {
+      toast.error("Something went wrong" + JSON.stringify(e));
     },
   });
 
@@ -33,7 +38,10 @@ const ExecuteWorkflow = ({ workflowId }: { workflowId: string }) => {
           onClick={() => {
             const plan = generate();
             if (!plan || isPending) return;
-            mutate({ workflowId, flowDefinition: JSON.stringify(toObject()) });
+            mutate({
+              workflowId,
+              flowDefinition: JSON.stringify(toObject()),
+            });
           }}
         >
           {!isPending && <Play size={20} className="stroke-orange-500" />}

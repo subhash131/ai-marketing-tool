@@ -11,8 +11,8 @@ const CreateWorkflow = () => {
   const router = useRouter();
   const { mutate, data, isPending } = useMutation({
     mutationFn: createWorkflow,
-    onError: () => {
-      toast.error("Something went wrong");
+    onError: (e) => {
+      toast.error("Something went wrong" + JSON.stringify(e));
     },
     onSuccess: (data) => {
       toast.success("Launching the Editor");

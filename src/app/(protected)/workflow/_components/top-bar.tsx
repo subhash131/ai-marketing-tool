@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import SaveWorkflow from "./save-workflow";
 import ExecuteWorkflow from "./execute-workflow";
@@ -39,8 +38,9 @@ const TopBar = ({
             </div>
             <div className="flex items-center gap-1">
               {/* TODO:: */}
-              <SaveWorkflow workflowId={workflowId} />
               <ExecuteWorkflow workflowId={workflowId} />
+
+              <SaveWorkflow workflowId={workflowId} />
               <ExitEditor />
             </div>
           </div>

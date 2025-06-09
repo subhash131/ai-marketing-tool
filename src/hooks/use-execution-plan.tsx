@@ -23,7 +23,7 @@ const useExecutionPlan = () => {
           if (error.invalidElements) setInvalidInputs(error.invalidElements);
           break;
         default:
-          toast.error("Something went wrong");
+          toast.error("(debug:handleError)Something went wrong");
       }
     },
     [setInvalidInputs]

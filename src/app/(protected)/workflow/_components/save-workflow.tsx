@@ -19,8 +19,8 @@ const SaveWorkflow = ({ workflowId }: { workflowId: string }) => {
     onSuccess: () => {
       toast.success("Workflow saved successfully");
     },
-    onError: () => {
-      toast.error("Something went wrong");
+    onError: (e) => {
+      toast.error("Something went wrong" + JSON.stringify(e));
     },
     onSettled: () => {
       toast.dismiss("save-workflow");

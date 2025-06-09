@@ -19,16 +19,6 @@ export type Workflow = {
   updatedAt?: string;
 };
 
-export enum WorkflowStatus {
-  DRAFT = "DRAFT",
-  PENDING = "PENDING",
-  RUNNING = "RUNNING",
-  COMPILED = "COMPILED",
-  COMPLETED = "COMPLETED",
-  FAILED = "FAILED",
-  PUBLISHED = "PUBLISHED",
-}
-
 export type WorkflowTask = {
   label: string;
   icon: React.FC<LucideProps>;
@@ -44,4 +34,58 @@ export type WorkFlowExecutionPlan = WorkFlowExecutionPlanPhase[];
 export type WorkFlowExecutionPlanPhase = {
   phase: number;
   nodes: FlowNode[];
+};
+
+export enum WorkflowStatus {
+  DRAFT = "DRAFT",
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPILED = "COMPILED",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  PUBLISHED = "PUBLISHED",
+}
+
+export enum WorkflowExecutionStatus {
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+export enum ExecutionPhaseStatus {
+  CREATED = "CREATED",
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+
+export enum WorkflowExecutionTrigger {
+  MANUAL = "MANUAL",
+  SCHEDULED = "SCHEDULED",
+}
+
+export type ExecutionWithPhases = {
+  id: string;
+  workflowId: string;
+  userId: WorkflowExecutionTrigger;
+  status: WorkflowStatus;
+  createdAt: string;
+  startedAt: string;
+  completedAt: string | null;
+  creditsConsumed: number | null;
+  phases: {
+    id: string;
+    userId: string;
+    status: ExecutionPhaseStatus;
+    number: number;
+    node: string;
+    name: string;
+    startedAt: string | null;
+    completedAt: string | null;
+    inputs: string;
+    outputs: string;
+    creditsConsumed: number | null;
+    workflowExecutionId: string;
+  }[];
 };

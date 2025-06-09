@@ -2,7 +2,14 @@
 
 import { FlowToExecutionPlan } from "@/app/(protected)/workflow/_lib/execution-plan";
 import { TaskRegistry } from "@/app/(protected)/workflow/_lib/registry/task-registry";
-import { WorkFlowExecutionPlan } from "@/types/workflow";
+import { parseTimestamp } from "@/lib/utils";
+import {
+  ExecutionPhaseStatus,
+  WorkFlowExecutionPlan,
+  WorkflowExecutionStatus,
+  WorkflowExecutionTrigger,
+} from "@/types/workflow";
+import { formatDistanceToNow } from "date-fns";
 
 export async function runWorkflow({
   workflowId,
@@ -15,6 +22,10 @@ export async function runWorkflow({
     throw new Error("workflowId is required");
   }
   const BACKEND_URL = process.env.BACKEND_URL;
+  // console.log(date);
+  const date = new Date();
+
+  // return;
 
   let workflow;
   const res = await fetch(`${BACKEND_URL}/workflow/${workflowId}`);
@@ -36,11 +47,10 @@ export async function runWorkflow({
   executionPlan = result.executionPlan;
 
   const phases = executionPlan.flatMap((p) => {
-    console.log({ p: JSON.stringify(p) });
     return p.nodes.map((node) => {
       return {
         userId: workflow.userId,
-        status: "CREATED",
+        status: ExecutionPhaseStatus.PENDING,
         number: p.phase,
         node: JSON.stringify(node),
         name: TaskRegistry[node.data.type].label,
@@ -49,9 +59,9 @@ export async function runWorkflow({
     });
   });
 
-  console.log({ phases });
+  console.log(date);
 
-  // return;
+  // 2025-06-09T13:28:18.578Z
   const executionRes = await fetch(`${BACKEND_URL}/execution`, {
     method: "POST",
     headers: {
@@ -61,18 +71,19 @@ export async function runWorkflow({
       execution: {
         workflowId,
         userId: workflow.userId,
-        status: "PENDING",
-        startedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        trigger: "manual",
+        status: WorkflowExecutionStatus.PENDING,
+        startedAt: date,
+        createdAt: date,
+        trigger: WorkflowExecutionTrigger.MANUAL,
         phases: [],
       },
       phases,
     }),
   });
 
-  const data = executionRes.json();
-  console.log({ executionRes: data });
-  if (!data) throw new Error("workflow execution failed");
-  return data;
+  const data = await executionRes.json();
+  if (!data.id) {
+    throw new Error("workflow execution failed");
+  }
+  return `/workflow/runs/${workflowId}/${data.id}`;
 }
