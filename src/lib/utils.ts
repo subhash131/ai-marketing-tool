@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, intervalToDuration } from "date-fns";
+import { ExecutionWithPhases, Phase } from "@/types/workflow";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,6 +14,31 @@ export function parseTimestamp(dateString: string): string {
     date.toLocaleString("en-US", { timeZone: userTimeZone })
   );
   return formatDistanceToNow(localDate, { addSuffix: true });
+}
+
+export function getPhasesTotalCose(phases: Phase[]) {
+  return phases.reduce(
+    (acc, phase) => acc + Number(phase.creditsConsumed) || 0,
+    0
+  );
+}
+
+export function datesToDurationString(
+  end: Date | null | undefined,
+  start: Date | null | undefined
+) {
+  if (!start || !end) return;
+
+  const timeElapsed = end.getTime() - start.getTime();
+
+  if (timeElapsed < 1000) {
+    return `${timeElapsed}ms`;
+  }
+  const duration = intervalToDuration({
+    start: 0,
+    end: timeElapsed,
+  });
+  return `${duration.minutes || 0}m ${duration.seconds || 0}`;
 }
 
 export function getUserLocalISOString() {

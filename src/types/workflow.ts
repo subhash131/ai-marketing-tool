@@ -65,6 +65,21 @@ export enum WorkflowExecutionTrigger {
   SCHEDULED = "SCHEDULED",
 }
 
+export type Phase = {
+  id: string;
+  userId: string;
+  status: ExecutionPhaseStatus;
+  number: number;
+  node: string;
+  name: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  inputs: string;
+  outputs: string;
+  creditsConsumed: number | null;
+  workflowExecutionId: string;
+};
+
 export type ExecutionWithPhases = {
   id: string;
   workflowId: string;
@@ -72,20 +87,7 @@ export type ExecutionWithPhases = {
   status: WorkflowStatus;
   createdAt: string;
   startedAt: string;
-  completedAt: string | null;
+  completedAt: string;
   creditsConsumed: number | null;
-  phases: {
-    id: string;
-    userId: string;
-    status: ExecutionPhaseStatus;
-    number: number;
-    node: string;
-    name: string;
-    startedAt: string | null;
-    completedAt: string | null;
-    inputs: string;
-    outputs: string;
-    creditsConsumed: number | null;
-    workflowExecutionId: string;
-  }[];
+  phases: Phase[];
 };
