@@ -3,13 +3,13 @@
 import { FlowToExecutionPlan } from "@/app/(protected)/workflow/_lib/execution-plan";
 import { TaskRegistry } from "@/app/(protected)/workflow/_lib/registry/task-registry";
 import { parseTimestamp } from "@/lib/utils";
+import { executeWorkflow } from "@/lib/workflow/execute-workflow";
 import {
   ExecutionPhaseStatus,
   WorkFlowExecutionPlan,
   WorkflowExecutionStatus,
   WorkflowExecutionTrigger,
 } from "@/types/workflow";
-import { formatDistanceToNow } from "date-fns";
 
 export async function runWorkflow({
   workflowId,
@@ -22,10 +22,7 @@ export async function runWorkflow({
     throw new Error("workflowId is required");
   }
   const BACKEND_URL = process.env.BACKEND_URL;
-  // console.log(date);
   const date = new Date();
-
-  // return;
 
   let workflow;
   const res = await fetch(`${BACKEND_URL}/workflow/${workflowId}`);
@@ -81,9 +78,13 @@ export async function runWorkflow({
     }),
   });
 
-  const data = await executionRes.json();
-  if (!data.id) {
+  const execution = await executionRes.json();
+  if (!execution.id) {
     throw new Error("workflow execution failed");
   }
-  return `/workflow/runs/${workflowId}/${data.id}`;
+
+  await executeWorkflow(execution.id);
+  return `/workflow/runs/${workflowId}/${execution.id}`;
 }
+
+// const delay =

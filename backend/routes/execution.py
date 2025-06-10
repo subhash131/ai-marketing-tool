@@ -1,5 +1,6 @@
 from fastapi import APIRouter,HTTPException
-from models.execution import WorkflowExecution, ExecutionPhase, ExecutionLog
+from models.execution import WorkflowExecution, ExecutionPhase, ExecutionLog, WorkflowExecutionUpdate,ExecutionPhaseUpdate
+from pymongo import ReturnDocument,UpdateOne
 from serializer.execution import serialize_execution,serialize_phase
 from bson import ObjectId
 from db import db
@@ -25,6 +26,22 @@ async def get_workflow_by_id(execution_id: str):
 
     serialized_execution = serialize_execution(execution)
     return serialized_execution
+
+
+@router.patch("/execution/{execution_id}")
+async def update_workflow(execution_id: str, execution: WorkflowExecutionUpdate):
+    execution_dict = execution.model_dump(exclude_unset=True)  
+
+    result = await db.workflowexecutions.find_one_and_update(
+        {"_id": ObjectId(execution_id)},
+        {"$set": execution_dict},
+        return_document=ReturnDocument.AFTER
+    )
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    
+    return {"id": str(result["_id"])}
 
 
     
@@ -60,6 +77,17 @@ async def create_phase(phase: ExecutionPhase):
     result = await db.executionphases.insert_one(phase.model_dump())
     return {"id": str(result.inserted_id)}
 
+@router.get("/phase/{phase_id}")
+async def get_phase_by_id(phase_id: str):
+    if not ObjectId.is_valid(phase_id):
+        raise HTTPException(status_code=400, detail="Invalid phase ID format")
+    result = await db.executionphases.find_one({"_id": ObjectId(phase_id)})
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="execution phase not found")
+
+    return serialize_phase(result)
+
 @router.post("/execution/phases")
 async def create_phases(phases: list[ExecutionPhase]):
     # Convert list of Pydantic models to list of dicts
@@ -68,6 +96,33 @@ async def create_phases(phases: list[ExecutionPhase]):
     result = await db.executionphases.insert_many(data)
 
     return  [str(_id) for _id in result.inserted_ids]
+
+@router.patch("/bulk/execution/phases")
+async def update_phases(phases: list[ExecutionPhaseUpdate]):
+    if not phases:
+        raise HTTPException(status_code=400, detail="No phases provided")
+
+    operations = []
+    for phase in phases:
+        if not phase.id:
+            raise HTTPException(status_code=422, detail="Each phase must have an 'id'")
+
+        update_data = phase.model_dump(exclude_unset=True)
+        phase_id = update_data.pop("id")
+
+        operations.append(
+            UpdateOne({"_id": ObjectId(phase_id)}, {"$set": update_data})
+        )
+
+    if operations:
+        result = await db.executionphases.bulk_write(operations)
+        return {
+            "matched": result.matched_count,
+            "modified": result.modified_count,
+        }
+
+    return {"matched": 0, "modified": 0}
+
 
 @router.post("/log")
 async def create_log(log: ExecutionLog):

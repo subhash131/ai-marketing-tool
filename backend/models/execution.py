@@ -15,6 +15,32 @@ class WorkflowExecution(BaseModel):
     creditsConsumed: Optional[int]= None
     phases: list[str]
 
+class WorkflowExecutionUpdate(BaseModel):
+    id: Optional[str] = Field(default=None, alias="_id")
+    workflowId: Optional[str] = None
+    userId: Optional[str] = None
+    trigger: Optional[str] = None
+    status: Optional[str] = None
+    createdAt: Optional[datetime] = None
+    startedAt: Optional[datetime] = None
+    completedAt: Optional[datetime]= None
+    creditsConsumed: Optional[int]= None
+    phases: Optional[list[str]] = None
+
+class ExecutionPhaseUpdate(BaseModel):
+    id: Optional[str] = Field(default=None, alias="_id")
+    userId: Optional[str] = None
+    status: Optional[str] = None
+    number: Optional[int] = None
+    node: Optional[str] = None
+    name: Optional[str] = None
+    startedAt: Optional[datetime]= None
+    completedAt: Optional[datetime]= None
+    inputs: Optional[str] = None
+    outputs: Optional[str] = None
+    creditsConsumed: Optional[int]= None
+    workflowExecutionId: Optional[str] = None
+
 
 class ExecutionPhase(BaseModel):
     id: Optional[str] = Field(default=None, alias="_id")
