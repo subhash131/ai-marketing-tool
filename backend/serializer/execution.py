@@ -9,7 +9,8 @@ def serialize_execution(execution) -> dict:
         "startedAt": execution.get("startedAt"),
         "completedAt": execution.get("completedAt"),
         "creditsConsumed": execution.get("creditsConsumed"),
-        "phases": execution.get("phases", [])  
+        "definition": execution.get("definition"),
+        "phases": execution.get("phases", [])
     }
 
 
@@ -17,7 +18,7 @@ def serialize_executions(executions: list[dict]) -> list[dict]:
     return [serialize_execution(exe) for exe in executions]
 
 
-def serialize_phase(phase: dict) -> dict:
+def serialize_phase(phase: dict, logs: list[dict] = None) -> dict:
     return {
         "id": str(phase["_id"]),
         "userId": phase["userId"],
@@ -31,6 +32,7 @@ def serialize_phase(phase: dict) -> dict:
         "outputs": phase.get("outputs"),
         "creditsConsumed": phase.get("creditsConsumed"),
         "workflowExecutionId": str(phase["workflowExecutionId"]) if "workflowExecutionId" in phase else None,
+        "logs": [serialize_log(log) for log in logs] if logs else [str(log_id) for log_id in phase.get("logs", [])]
     }
 
 

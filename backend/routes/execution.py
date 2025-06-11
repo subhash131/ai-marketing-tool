@@ -1,8 +1,9 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,Body
 from models.execution import WorkflowExecution, ExecutionPhase, ExecutionLog, WorkflowExecutionUpdate,ExecutionPhaseUpdate
 from pymongo import ReturnDocument,UpdateOne
 from serializer.execution import serialize_execution,serialize_phase
 from bson import ObjectId
+from typing import Optional
 from db import db
 
 router = APIRouter()
@@ -81,12 +82,18 @@ async def create_phase(phase: ExecutionPhase):
 async def get_phase_by_id(phase_id: str):
     if not ObjectId.is_valid(phase_id):
         raise HTTPException(status_code=400, detail="Invalid phase ID format")
-    result = await db.executionphases.find_one({"_id": ObjectId(phase_id)})
+    phase = await db.executionphases.find_one({"_id": ObjectId(phase_id)})
+    logs = []
+    for log_id in phase.get("logs", []):
+        log = await db.executionlogs.find_one({"_id": ObjectId(log_id)})
+        if log:
+            logs.append(log)
+
     
-    if not result:
+    if not phase:
         raise HTTPException(status_code=404, detail="execution phase not found")
 
-    return serialize_phase(result)
+    return serialize_phase(phase, logs)
 
 @router.post("/execution/phases")
 async def create_phases(phases: list[ExecutionPhase]):
@@ -98,20 +105,63 @@ async def create_phases(phases: list[ExecutionPhase]):
     return  [str(_id) for _id in result.inserted_ids]
 
 
-@router.patch("/execution/phase/{executionId}")
-async def update_execution_phase_by_id(executionId: str, phase:ExecutionPhaseUpdate):
-    # Convert list of Pydantic models to list of dicts
-    phase_dict = phase.model_dump(exclude_unset=True)  
+# @router.patch("/execution/phase/{executionId}")
+# async def update_execution_phase_by_id(executionId: str, phase:ExecutionPhaseUpdate):
+#     # Convert list of Pydantic models to list of dicts
+#     phase_dict = phase.model_dump(exclude_unset=True)  
 
+#     result = await db.executionphases.find_one_and_update(
+#         {"_id": ObjectId(executionId)},
+#         {"$set": phase_dict},
+#         return_document=True
+#     )
+#     if not result:
+#         raise HTTPException(status_code=404, detail="Execution phase not found")
+
+#     return {"id": str(result["_id"])}
+
+@router.patch("/execution/phase/{executionId}")
+async def update_execution_phase_by_id(executionId: str, phase: ExecutionPhaseUpdate, logs: Optional[list[ExecutionLog]] = Body(default=None)):
+    phase_dict = phase.model_dump(exclude_unset=True)
+    update_doc = {"$set": {}}
+    log_ids_to_add = []
+
+    print(phase_dict)
+    if logs:
+        inserted = await db.executionlogs.insert_many([log.model_dump() for log in logs])
+        log_ids_to_add = inserted.inserted_ids
+
+        # Append inserted log IDs to phase_dict.logs
+        if "logs" in phase_dict:
+            phase_dict["logs"].extend([str(_id) for _id in log_ids_to_add])
+        else:
+            phase_dict["logs"] = [str(_id) for _id in log_ids_to_add]
+
+    # If logs are included, insert them into executionlogs collection
+    if "logs" in phase_dict:
+        logs_obj_ids = [ObjectId(log_id) for log_id in phase_dict.pop("logs")]
+        update_doc["$push"] = {"logs": {"$each": logs_obj_ids}}
+
+    # Add other fields to $set
+    update_doc["$set"].update(phase_dict)
+    if not update_doc["$set"]:
+        del update_doc["$set"]
+
+    # Perform the update
     result = await db.executionphases.find_one_and_update(
         {"_id": ObjectId(executionId)},
-        {"$set": phase_dict},
-        return_document=True
+        update_doc,
+        return_document=ReturnDocument.AFTER
     )
+
     if not result:
         raise HTTPException(status_code=404, detail="Execution phase not found")
 
-    return {"id": str(result["_id"])}
+    return {
+        "id": str(result["_id"]),
+        "new_logs": [str(_id) for _id in log_ids_to_add]
+    }
+
 
 
 
@@ -144,5 +194,15 @@ async def update_phases(phases: list[ExecutionPhaseUpdate]):
 
 @router.post("/log")
 async def create_log(log: ExecutionLog):
+    phase_id = log.executionPhaseId
     result = await db.executionlogs.insert_one(log.model_dump())
+    res = await db.executionphases.find_one({"_id": ObjectId(phase_id)})
+    exeResult = await db.executionphases.find_one_and_update(
+        {"_id": ObjectId(phase_id)},
+        {"$push": {"logs": result.inserted_id}},
+        return_document=ReturnDocument.AFTER
+    )
+    print("res",res)
+    print("phase_id",phase_id)
+    print("Exe-result",exeResult)
     return {"id": str(result.inserted_id)}
