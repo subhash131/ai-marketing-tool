@@ -8,7 +8,7 @@ from db import db
 router = APIRouter()
 
 @router.get("/execution/{execution_id}")
-async def get_workflow_by_id(execution_id: str):
+async def get_execution_by_id(execution_id: str):
     if not ObjectId.is_valid(execution_id):
         raise HTTPException(status_code=400, detail="Invalid execution ID format")
 
@@ -29,7 +29,7 @@ async def get_workflow_by_id(execution_id: str):
 
 
 @router.patch("/execution/{execution_id}")
-async def update_workflow(execution_id: str, execution: WorkflowExecutionUpdate):
+async def update_execution(execution_id: str, execution: WorkflowExecutionUpdate):
     execution_dict = execution.model_dump(exclude_unset=True)  
 
     result = await db.workflowexecutions.find_one_and_update(
@@ -96,6 +96,24 @@ async def create_phases(phases: list[ExecutionPhase]):
     result = await db.executionphases.insert_many(data)
 
     return  [str(_id) for _id in result.inserted_ids]
+
+
+@router.patch("/execution/phase/{executionId}")
+async def update_execution_phase_by_id(executionId: str, phase:ExecutionPhaseUpdate):
+    # Convert list of Pydantic models to list of dicts
+    phase_dict = phase.model_dump(exclude_unset=True)  
+
+    result = await db.executionphases.find_one_and_update(
+        {"_id": ObjectId(executionId)},
+        {"$set": phase_dict},
+        return_document=True
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Execution phase not found")
+
+    return {"id": str(result["_id"])}
+
+
 
 @router.patch("/bulk/execution/phases")
 async def update_phases(phases: list[ExecutionPhaseUpdate]):
