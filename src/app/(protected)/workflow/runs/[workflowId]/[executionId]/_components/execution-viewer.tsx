@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { cn, datesToDurationString, getPhasesTotalCose } from "@/lib/utils";
 import { Log, LogLevel } from "@/types/executor";
-import { ExecutionWithPhases } from "@/types/workflow";
+import { ExecutionWithPhases, WorkflowStatus } from "@/types/workflow";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -34,7 +34,8 @@ import {
   LucideIcon,
   Workflow,
 } from "lucide-react";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
+import PhaseStatusBadge from "./phase-status-badge";
 
 const ExecutionViewer = ({
   initialData,
@@ -59,7 +60,22 @@ const ExecutionViewer = ({
     enabled: !!selectedPhase,
   });
 
-  // const isRunning = query.data?.status === "RUNNING";
+  // const isRunning = query.data?.status === WorkflowStatus.RUNNING;
+
+  useEffect(() => {
+    const phases = query.data.phases || [];
+    if (query.data.status === WorkflowStatus.RUNNING) {
+      const phaseToSelect = phases.toSorted((a, b) =>
+        a.startedAt! > b.startedAt! ? -1 : 1
+      )[0];
+      setSelectedPhase(phaseToSelect.id);
+      return;
+    }
+    const phaseToSelect = phases.toSorted((a, b) =>
+      a.startedAt! > b.startedAt! ? -1 : 1
+    )[0];
+    setSelectedPhase(phaseToSelect.id);
+  }, [query.data.phases, query.data.status, setSelectedPhase]);
 
   const duration = datesToDurationString(
     new Date(query.data?.completedAt),
@@ -125,9 +141,7 @@ const ExecutionViewer = ({
                     <Badge variant={"outline"}>{index + 1}</Badge>
                     <p className="font-semibold">{phase.name}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {phase.status}
-                  </p>
+                  <PhaseStatusBadge status={phase.status} />
                 </Button>
               );
             })}
@@ -277,7 +291,9 @@ function LogViewer({ logs }: { logs: Log[] | undefined }) {
           <TableBody>
             {logs.map((log) => (
               <TableRow key={log.id} className="text-muted-foreground">
-                <TableCell>{new Date(log.timestamp).toISOString()}</TableCell>
+                <TableCell>
+                  {new Date(log.timestamp).toLocaleString()}
+                </TableCell>
                 <TableCell className="text-sm flex-1 p-0.5 pl-4">
                   {log.message}
                 </TableCell>
