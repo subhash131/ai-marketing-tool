@@ -72,6 +72,7 @@ export async function runWorkflow({
         createdAt: date,
         trigger: WorkflowExecutionTrigger.MANUAL,
         phases: [],
+        definition: flowDefinition ? flowDefinition : "{}",
       },
       phases,
     }),
