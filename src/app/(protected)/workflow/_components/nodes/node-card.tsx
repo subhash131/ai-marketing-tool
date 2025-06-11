@@ -13,7 +13,6 @@ type Props = {
 const NodeCard = ({ nodeId, children, isSelected }: Props) => {
   const { getNode, setCenter } = useReactFlow();
   const { invalidInputs } = useFlowValidation();
-  console.log({ invalidInputs });
   const hasInvalidInputs = invalidInputs?.some(
     (input) => input.nodeId === nodeId
   );

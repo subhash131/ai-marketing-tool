@@ -6,12 +6,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useExecutionPlan from "@/hooks/use-execution-plan";
-import { getUserLocalISOString } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useReactFlow } from "@xyflow/react";
 import { LoaderCircle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { toast } from "sonner";
 
 const ExecuteWorkflow = ({ workflowId }: { workflowId: string }) => {
@@ -22,13 +21,22 @@ const ExecuteWorkflow = ({ workflowId }: { workflowId: string }) => {
   const { isPending, mutate } = useMutation({
     mutationFn: runWorkflow,
     onSuccess: (redirectUrl: string) => {
-      toast.success("Execution started", { id: "execute-workflow" });
       router.push(redirectUrl);
     },
     onError: (e) => {
       toast.error("Something went wrong" + JSON.stringify(e));
     },
   });
+
+  useEffect(() => {
+    if (isPending) {
+      toast.loading("Executing workflow...", {
+        id: "execute-workflow",
+      });
+    } else {
+      toast.dismiss("execute-workflow");
+    }
+  }, [isPending]);
 
   return (
     <Tooltip>

@@ -37,8 +37,6 @@ export const createWorkflow = async ({
       updatedAt: new Date().toISOString(),
     };
 
-    console.log("workflow", workflow);
-
     const res = await fetch(`${BACKEND_URL}/workflow`, {
       body: JSON.stringify(workflow),
       method: "POST",

@@ -8,7 +8,6 @@ export async function getWorkflowPhaseDetails(phaseId: string): Promise<Phase> {
     const res = await fetch(`${BACKEND_URL}/phase/${phaseId}`);
     if (res.ok) {
       const data = await res.json();
-      console.log({ data });
       return data;
     } else {
       throw new Error("Failed to Phase Details");

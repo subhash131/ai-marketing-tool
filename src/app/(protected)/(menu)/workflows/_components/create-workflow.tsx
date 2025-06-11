@@ -16,7 +16,6 @@ const CreateWorkflow = () => {
     },
     onSuccess: (data) => {
       toast.success("Launching the Editor");
-      console.log(data);
       router.push(`/workflow/${data.id}`);
     },
   });

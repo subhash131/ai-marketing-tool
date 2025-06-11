@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDistanceToNow, intervalToDuration } from "date-fns";
-import { ExecutionWithPhases, Phase } from "@/types/workflow";
+import { Phase } from "@/types/workflow";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -38,7 +38,7 @@ export function datesToDurationString(
     start: 0,
     end: timeElapsed,
   });
-  return `${duration.minutes || 0}m ${duration.seconds || 0}`;
+  return `${duration.minutes || 0}m ${duration.seconds || 0}s`;
 }
 
 export function getUserLocalISOString() {

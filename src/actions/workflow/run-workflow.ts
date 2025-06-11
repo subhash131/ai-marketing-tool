@@ -2,7 +2,6 @@
 
 import { FlowToExecutionPlan } from "@/app/(protected)/workflow/_lib/execution-plan";
 import { TaskRegistry } from "@/app/(protected)/workflow/_lib/registry/task-registry";
-import { parseTimestamp } from "@/lib/utils";
 import { executeWorkflow } from "@/lib/workflow/execute-workflow";
 import {
   ExecutionPhaseStatus,
@@ -84,7 +83,6 @@ export async function runWorkflow({
   }
 
   await executeWorkflow(execution.id);
+
   return `/workflow/runs/${workflowId}/${execution.id}`;
 }
-
-// const delay =
