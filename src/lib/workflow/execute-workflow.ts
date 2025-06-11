@@ -15,12 +15,20 @@ import {
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { executorRegistry } from "./executor/registry";
-import { Environment, ExecutionEnvironment } from "@/types/executor";
+import {
+  Environment,
+  ExecutionEnvironment,
+  LogCollector,
+} from "@/types/executor";
+import { Edge } from "@xyflow/react";
+import { createLogCollector } from "./log";
 
 export async function executeWorkflow(executionId: string) {
   const execution = await getExecutionById({ executionId });
 
   if (!execution) throw new Error("execution not found");
+
+  const edges: Edge[] = JSON.parse(execution.definition).edges;
 
   //   Execution environment
   const environment: Environment = {
@@ -34,21 +42,19 @@ export async function executeWorkflow(executionId: string) {
   let creditsConsumed = 0;
   for (const phase of execution.phases) {
     //Execute phase
-    const phaseExecution = await executeWorkflowPhase(phase, environment);
+    const phaseExecution = await executeWorkflowPhase(
+      phase,
+      environment,
+      edges
+    );
   }
 
-  setTimeout(async () => {
-    await finalizeWorkflowExecution({
-      executionId,
-      workflowId: execution.workflowId,
-      executionFailed,
-      creditsConsumed,
-    });
-  }, 5000);
-
-  //   Finalize execution
-
-  //   clean up env
+  await finalizeWorkflowExecution({
+    executionId,
+    workflowId: execution.workflowId,
+    executionFailed,
+    creditsConsumed,
+  });
 
   await cleanUpEnvironment(environment);
 
@@ -119,11 +125,16 @@ async function finalizeWorkflowExecution({
   }
 }
 
-async function executeWorkflowPhase(phase: Phase, environment: Environment) {
+async function executeWorkflowPhase(
+  phase: Phase,
+  environment: Environment,
+  edges: Edge[]
+) {
   const startedAt = new Date();
   const node: FlowNode = JSON.parse(phase.node);
+  const logCollector: LogCollector = createLogCollector();
 
-  setupEnvironmentForPhase(node, environment);
+  setupEnvironmentForPhase(node, environment, edges);
 
   await updateExecutionPhaseById({
     phaseId: phase.id,
@@ -133,6 +144,7 @@ async function executeWorkflowPhase(phase: Phase, environment: Environment) {
       inputs: JSON.stringify(environment.phases[node.id].inputs),
       // outputs: JSON.stringify(environment.phases[node.id].outputs),
     },
+    logs: logCollector.getAll(),
   });
 
   const creditsRequired = TaskRegistry[node.data.type].credits;
@@ -144,14 +156,20 @@ async function executeWorkflowPhase(phase: Phase, environment: Environment) {
     node,
     phase,
     environment,
+    logCollector,
   });
   const outputs = environment.phases[node.id].outputs;
 
-  await finalizePhase(phase.id, success, outputs);
+  await finalizePhase(phase.id, success, outputs, logCollector);
   return { success };
 }
 
-async function finalizePhase(phaseId: string, success: boolean, outputs: any) {
+async function finalizePhase(
+  phaseId: string,
+  success: boolean,
+  outputs: any,
+  logCollector: LogCollector
+) {
   const finalStatus = success
     ? ExecutionPhaseStatus.COMPLETED
     : ExecutionPhaseStatus.FAILED;
@@ -163,6 +181,7 @@ async function finalizePhase(phaseId: string, success: boolean, outputs: any) {
       completedAt,
       outputs: JSON.stringify(outputs),
     },
+    logs: logCollector.getAll(),
   });
 }
 
@@ -178,21 +197,27 @@ async function executePhase({
   phase,
   node,
   environment,
+  logCollector,
 }: {
   phase: Phase;
   node: FlowNode;
   environment: Environment;
+  logCollector: LogCollector;
 }): Promise<boolean> {
   const runFn = executorRegistry[node.data.type];
   if (!runFn) {
     return false;
   }
   const executionEnvironment: ExecutionEnvironment<any> =
-    createExecutionEnvironment(node, environment);
+    createExecutionEnvironment(node, environment, logCollector);
   return await runFn(executionEnvironment);
 }
 
-function setupEnvironmentForPhase(node: FlowNode, environment: Environment) {
+function setupEnvironmentForPhase(
+  node: FlowNode,
+  environment: Environment,
+  edges: Edge[]
+) {
   environment.phases[node.id] = {
     inputs: {},
     outputs: {},
@@ -209,12 +234,26 @@ function setupEnvironmentForPhase(node: FlowNode, environment: Environment) {
     }
 
     //Get input value from outputs
+    const connectedEdge = edges.find(
+      (edge) => edge.targetHandle === input.name
+    );
+
+    if (!connectedEdge || !connectedEdge.sourceHandle) {
+      console.error("Missing edge for input", input.name, "node id:", node.id);
+      continue;
+    }
+    const outputValue =
+      environment.phases[connectedEdge.source].outputs[
+        connectedEdge.sourceHandle
+      ];
+    environment.phases[node.id].inputs[input.name] = outputValue;
   }
 }
 
 function createExecutionEnvironment(
   node: FlowNode,
-  environment: Environment
+  environment: Environment,
+  logCollector: LogCollector
 ): ExecutionEnvironment<any> {
   return {
     getInput(name) {
@@ -235,6 +274,7 @@ function createExecutionEnvironment(
     setPage(page) {
       environment.page = page;
     },
+    log: logCollector,
   };
 }
 

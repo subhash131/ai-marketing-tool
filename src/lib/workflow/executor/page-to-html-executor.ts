@@ -10,8 +10,8 @@ export const PageToHtmlExecutor = async (
     environment.setOutput("Html", html || "");
 
     return true;
-  } catch (e) {
-    console.log(e);
+  } catch (e: any) {
+    environment.log.error(e.message);
     return false;
   }
 };

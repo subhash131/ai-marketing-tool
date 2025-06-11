@@ -1,5 +1,6 @@
 import { LucideProps } from "lucide-react";
 import { FlowNode, TaskParam, TaskType } from "./flow-node";
+import { Log } from "./executor";
 
 export type Workflow = {
   id?: string;
@@ -78,6 +79,7 @@ export type Phase = {
   outputs: string;
   creditsConsumed: number | null;
   workflowExecutionId: string;
+  logs: Log[];
 };
 
 export type ExecutionWithPhases = {
@@ -90,4 +92,6 @@ export type ExecutionWithPhases = {
   completedAt: string;
   creditsConsumed: number | null;
   phases: Phase[];
+  definition: string;
+  logs: Log[];
 };

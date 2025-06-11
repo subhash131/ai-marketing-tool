@@ -6,7 +6,7 @@ const BrowserInstanceParam = ({
   updateNodeParamValue,
   value,
 }: ParamProps) => {
-  return <p className="text-xs h-10">{param.name} subhahs</p>;
+  return <p className="text-xs h-10">{param.name}</p>;
 };
 
 export default BrowserInstanceParam;

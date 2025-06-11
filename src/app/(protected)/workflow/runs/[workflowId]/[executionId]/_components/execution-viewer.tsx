@@ -3,8 +3,25 @@ import { getWorkflowExecutionWithPhases } from "@/actions/workflow/get-workflow-
 import { getWorkflowPhaseDetails } from "@/actions/workflow/get-workflow-phase-details";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { datesToDurationString, getPhasesTotalCose } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn, datesToDurationString, getPhasesTotalCose } from "@/lib/utils";
+import { Log, LogLevel } from "@/types/executor";
 import { ExecutionWithPhases } from "@/types/workflow";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
@@ -37,12 +54,12 @@ const ExecutionViewer = ({
     queryFn: async () => {
       if (selectedPhase) {
         return await getWorkflowPhaseDetails(selectedPhase);
-      } else return null;
+      }
     },
-    enabled: selectedPhase !== null,
+    enabled: !!selectedPhase,
   });
 
-  const isRunning = query.data?.status === "RUNNING";
+  // const isRunning = query.data?.status === "RUNNING";
 
   const duration = datesToDurationString(
     new Date(query.data?.completedAt),
@@ -51,7 +68,7 @@ const ExecutionViewer = ({
   const creditsConsumed = getPhasesTotalCose(query.data?.phases || []);
   return (
     <div className="w-full h-full flex">
-      <aside className="h-full min-w-[28rem] max-w-[28rem] border-r-2 border-separate flex flex-col overflow-hidden">
+      <div className="h-full min-w-[28rem] max-w-[28rem] border-r-2 border-separate flex flex-col overflow-hidden">
         <div className="py-4 px-2">
           <ExecutionLabel
             icon={CircleDashedIcon}
@@ -100,7 +117,7 @@ const ExecutionViewer = ({
                   className="w-full justify-between cursor-pointer"
                   variant={selectedPhase === phase.id ? "secondary" : "ghost"}
                   onClick={() => {
-                    if (isRunning) return;
+                    // if (isRunning) return;
                     setSelectedPhase(phase.id);
                   }}
                 >
@@ -117,9 +134,52 @@ const ExecutionViewer = ({
           </div>
           <Separator />
         </div>
-      </aside>
-      <div className="flex w-full h-full">
-        <pre>{JSON.stringify(phaseDetails, null, 4)}</pre>
+      </div>
+      <div className="flex w-full h-full justify-center overflow-hidden p-2">
+        {!selectedPhase && (
+          <div className="text-sm text-muted-foreground size-full flex items-center justify-center">
+            Select a phase to view.
+          </div>
+        )}
+        {selectedPhase && phaseDetails?.id && (
+          <div className="flex flex-col py-4 container gap-4 overflow-y-scroll hide-scrollbar pb-60">
+            <div className="flex gap-2 ">
+              <Badge variant={"outline"} className="space-x-1">
+                <Coins size={24} className="stroke-muted-foreground" />
+                <span>Credits</span>
+                <span>{phaseDetails.creditsConsumed || 0}</span>
+              </Badge>
+              <Badge variant={"outline"} className="space-x-1">
+                <ClockIcon size={24} className="stroke-muted-foreground" />
+                <span>Duration</span>
+                <span>
+                  {phaseDetails.startedAt && phaseDetails.completedAt
+                    ? datesToDurationString(
+                        new Date(phaseDetails.completedAt),
+                        new Date(phaseDetails.startedAt)
+                      ) || "-"
+                    : "-"}
+                </span>
+              </Badge>
+            </div>
+            <div className="flex flex-col gap-4">
+              <ParameterViewer
+                title="Inputs"
+                subtitle="Inputs used for this phase"
+                paramJson={phaseDetails.inputs}
+              />
+              <ParameterViewer
+                title="Outputs"
+                subtitle="Outputs generated for this phase"
+                paramJson={phaseDetails.outputs}
+              />
+
+              {phaseDetails.logs.length > 0 && (
+                <LogViewer logs={phaseDetails.logs} />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -146,5 +206,96 @@ function ExecutionLabel({
         {value}
       </div>
     </div>
+  );
+}
+
+function ParameterViewer({
+  paramJson,
+  subtitle,
+  title,
+}: {
+  title: string;
+  subtitle: string;
+  paramJson: any;
+}) {
+  const params = paramJson ? JSON.parse(paramJson) : undefined;
+
+  return (
+    <Card className="py-0 overflow-hidden">
+      <CardHeader className="rounded-lg rounded-b-none border-b py-4 bg-gray-50 dark:bg-background">
+        <CardTitle className="text-base">{title}</CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          {subtitle}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="py-4">
+        <div className="flex flex-col gap-2">
+          {(!params || Object.keys(params).length === 0) && (
+            <p>No input parameters in this phase</p>
+          )}
+          {params &&
+            Object.entries(params).map(([key, value]) => (
+              <div
+                key={key}
+                className="flex justify-between items-center space-y-1"
+              >
+                <p className="text-sm text-muted-foreground flex-1 basis-1/3">
+                  {key}
+                </p>
+                <Input
+                  readOnly
+                  value={value as string}
+                  className="flex-1 basis-2/3"
+                />
+              </div>
+            ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LogViewer({ logs }: { logs: Log[] | undefined }) {
+  if (!logs) return null;
+  return (
+    <Card className="py-0 overflow-hidden">
+      <CardHeader className="rounded-lg rounded-b-none border-b py-4 bg-gray-50 dark:bg-background">
+        <CardTitle className="text-base">Logs</CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          Logs generated by this phase
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Time</TableHead>
+              <TableHead>Message</TableHead>
+              <TableHead>Level</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {logs.map((log) => (
+              <TableRow key={log.id} className="text-muted-foreground">
+                <TableCell>{new Date(log.timestamp).toISOString()}</TableCell>
+                <TableCell className="text-sm flex-1 p-0.5 pl-4">
+                  {log.message}
+                </TableCell>
+                <TableCell
+                  className={cn(
+                    "text-xs font-bold p-0.5 pl-4",
+                    (log.logLevel as LogLevel) === "error" &&
+                      "text-destructive",
+                    (log.logLevel as LogLevel) === "info" && "text-primary"
+                  )}
+                >
+                  {log.logLevel}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
