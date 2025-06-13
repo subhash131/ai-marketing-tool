@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import SaveWorkflow from "./save-workflow";
 import ExecuteWorkflow from "./execute-workflow";
 import ExitEditor from "./exit-editor";
+import NavigationTabs from "./navigation-tabs";
+import PublishWorkflow from "./publish-workflow";
 
 const TopBar = ({
   title,
@@ -27,11 +29,11 @@ const TopBar = ({
       <div className="relative flex items-center justify-center w-96 h-full group pointer-events-auto">
         <div
           className={cn(
-            "absolute p-2 bg-sidebar border rounded-sm min-w-60 transition-all duration-300 group-hover:top-0",
+            "absolute flex gap-4 transition-all duration-300 group-hover:top-0",
             `${show ? "top-0" : "-top-20"}`
           )}
         >
-          <div className="flex items-center justify-between w-full ">
+          <div className="flex items-center justify-between w-full bg-sidebar border rounded-md min-w-60 p-2">
             <div>
               <p className="text-sm">{title}</p>
               <p className="text-xs text-muted-foreground">{subtitle}</p>
@@ -39,11 +41,12 @@ const TopBar = ({
             <div className="flex items-center gap-1">
               {/* TODO:: */}
               <ExecuteWorkflow workflowId={workflowId} />
-
+              <PublishWorkflow workflowId={workflowId} />
               <SaveWorkflow workflowId={workflowId} />
               <ExitEditor />
             </div>
           </div>
+          <NavigationTabs workflowId={workflowId} />
         </div>
       </div>
     </header>

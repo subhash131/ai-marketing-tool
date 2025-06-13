@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { cn, datesToDurationString, getPhasesTotalCose } from "@/lib/utils";
 import { Log, LogLevel } from "@/types/executor";
-import { ExecutionWithPhases, WorkflowStatus } from "@/types/workflow";
+import { WorkflowStatus } from "@/types/workflow";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -37,18 +37,19 @@ import {
 import React, { ReactNode, useEffect, useState } from "react";
 import PhaseStatusBadge from "./phase-status-badge";
 
-const ExecutionViewer = ({
-  initialData,
-}: {
-  initialData: ExecutionWithPhases;
-}) => {
+const ExecutionViewer = ({ executionId }: { executionId: string }) => {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const query = useQuery({
-    initialData,
-    queryKey: ["execution", initialData?.id],
-    queryFn: () => getWorkflowExecutionWithPhases(initialData?.id),
+    queryKey: ["execution", executionId],
+    queryFn: async () => {
+      const res = await getWorkflowExecutionWithPhases(executionId);
+      console.log({ res });
+      return res;
+    },
     refetchInterval: (q) => (q.state.data?.status === "RUNNING" ? 1000 : false),
   });
+
+  console.log({ query });
 
   const { data: phaseDetails } = useQuery({
     queryKey: ["phaseDetails", selectedPhase],
@@ -60,28 +61,33 @@ const ExecutionViewer = ({
     enabled: !!selectedPhase,
   });
 
-  // const isRunning = query.data?.status === WorkflowStatus.RUNNING;
+  const isRunning = query.data?.status === WorkflowStatus.RUNNING;
 
   useEffect(() => {
-    const phases = query.data.phases || [];
-    if (query.data.status === WorkflowStatus.RUNNING) {
+    if (!query.data || query.data?.phases?.length === 0) return;
+    const phases = query.data?.phases || [];
+    if (isRunning) {
       const phaseToSelect = phases.toSorted((a, b) =>
         a.startedAt! > b.startedAt! ? -1 : 1
       )[0];
-      setSelectedPhase(phaseToSelect.id);
+      setSelectedPhase(phaseToSelect?.id);
       return;
     }
     const phaseToSelect = phases.toSorted((a, b) =>
       a.startedAt! > b.startedAt! ? -1 : 1
     )[0];
-    setSelectedPhase(phaseToSelect.id);
-  }, [query.data.phases, query.data.status, setSelectedPhase]);
+    setSelectedPhase(phaseToSelect?.id);
+  }, [query.data?.phases, query.data?.status, setSelectedPhase]);
 
+  const creditsConsumed = getPhasesTotalCose(query.data?.phases || []);
+
+  if (query.isLoading) return <div>Loading...</div>;
+
+  if (!query.data) return <div>404 Not found</div>;
   const duration = datesToDurationString(
     new Date(query.data?.completedAt),
     new Date(query.data?.startedAt)
   );
-  const creditsConsumed = getPhasesTotalCose(query.data?.phases || []);
   return (
     <div className="w-full h-full flex">
       <div className="h-full min-w-[28rem] max-w-[28rem] border-r-2 border-separate flex flex-col overflow-hidden">
@@ -133,7 +139,7 @@ const ExecutionViewer = ({
                   className="w-full justify-between cursor-pointer"
                   variant={selectedPhase === phase.id ? "secondary" : "ghost"}
                   onClick={() => {
-                    // if (isRunning) return;
+                    if (isRunning) return;
                     setSelectedPhase(phase.id);
                   }}
                 >

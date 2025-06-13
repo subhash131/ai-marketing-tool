@@ -47,6 +47,8 @@ export async function executeWorkflow(executionId: string) {
       environment,
       edges
     );
+
+    executionFailed = phaseExecution.success;
   }
 
   await finalizeWorkflowExecution({
@@ -58,7 +60,7 @@ export async function executeWorkflow(executionId: string) {
 
   await cleanUpEnvironment(environment);
 
-  revalidatePath("/workflows/runs");
+  // revalidatePath("/workflows/runs");
 }
 
 async function initializeWorkflowExecution(
@@ -170,6 +172,7 @@ async function finalizePhase(
   outputs: any,
   logCollector: LogCollector
 ) {
+  console.log({ success });
   const finalStatus = success
     ? ExecutionPhaseStatus.COMPLETED
     : ExecutionPhaseStatus.FAILED;

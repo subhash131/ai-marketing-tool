@@ -13,9 +13,42 @@ def serialize_execution(execution) -> dict:
         "phases": execution.get("phases", [])
     }
 
+def serialize_execution_with_phase_id(execution) -> dict:
+    return {
+        "id": str(execution["_id"]),
+        "workflowId": execution["workflowId"],
+        "userId": execution["userId"],
+        "trigger": execution["trigger"],
+        "status": execution["status"],
+        "createdAt": execution["createdAt"],
+        "startedAt": execution.get("startedAt"),
+        "completedAt": execution.get("completedAt"),
+        "creditsConsumed": execution.get("creditsConsumed"),
+        "definition": execution.get("definition"),
+        "phases": [str(p) for p in execution.get("phases", [])]
+    }
+
+def serialize_execution(execution) -> dict:
+    return {
+        "id": str(execution["_id"]),
+        "workflowId": execution["workflowId"],
+        "userId": execution["userId"],
+        "trigger": execution["trigger"],
+        "status": execution["status"],
+        "createdAt": execution["createdAt"],
+        "startedAt": execution.get("startedAt"),
+        "completedAt": execution.get("completedAt"),
+        "creditsConsumed": execution.get("creditsConsumed"),
+        "definition": execution.get("definition"),
+        "phases": execution.get("phases", [])
+    }
+
 
 def serialize_executions(executions: list[dict]) -> list[dict]:
     return [serialize_execution(exe) for exe in executions]
+
+def serialize_executions_with_phase_id(executions: list[dict]) -> list[dict]:
+    return [serialize_execution_with_phase_id(exe) for exe in executions]
 
 
 def serialize_phase(phase: dict, logs: list[dict] = None) -> dict:

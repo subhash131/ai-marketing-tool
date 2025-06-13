@@ -67,7 +67,7 @@ export async function runWorkflow({
       execution: {
         workflowId,
         userId: workflow.userId,
-        status: WorkflowExecutionStatus.PENDING,
+        status: WorkflowExecutionStatus.RUNNING,
         startedAt: date,
         createdAt: date,
         trigger: WorkflowExecutionTrigger.MANUAL,
@@ -83,7 +83,7 @@ export async function runWorkflow({
     throw new Error("workflow execution failed");
   }
 
-  await executeWorkflow(execution.id);
+  executeWorkflow(execution.id);
 
   return `/workflow/runs/${workflowId}/${execution.id}`;
 }

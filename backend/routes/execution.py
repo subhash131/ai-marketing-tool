@@ -1,10 +1,11 @@
-from fastapi import APIRouter,HTTPException,Body
+from fastapi import APIRouter,HTTPException,Body,Query
 from models.execution import WorkflowExecution, ExecutionPhase, ExecutionLog, WorkflowExecutionUpdate,ExecutionPhaseUpdate
 from pymongo import ReturnDocument,UpdateOne
-from serializer.execution import serialize_execution,serialize_phase
+from serializer.execution import serialize_execution,serialize_phase,serialize_executions_with_phase_id
 from bson import ObjectId
 from typing import Optional
 from db import db
+from pymongo import DESCENDING
 
 router = APIRouter()
 
@@ -27,6 +28,20 @@ async def get_execution_by_id(execution_id: str):
 
     serialized_execution = serialize_execution(execution)
     return serialized_execution
+
+@router.get("/executions")
+async def get_workflow_executions_by_id(workflowId: str = Query(..., alias="workflowId")):
+    if not ObjectId.is_valid(workflowId):
+        raise HTTPException(status_code=400, detail="Invalid workflow ID format")
+
+    cursor = db.workflowexecutions.find({"workflowId": workflowId}).sort("startedAt", DESCENDING)
+    executions = [execution async for execution in cursor]
+
+    if not executions:
+        raise HTTPException(status_code=404, detail="No executions found")
+
+    serialized_executions = serialize_executions_with_phase_id(executions)
+    return serialized_executions
 
 
 @router.patch("/execution/{execution_id}")
@@ -104,21 +119,6 @@ async def create_phases(phases: list[ExecutionPhase]):
 
     return  [str(_id) for _id in result.inserted_ids]
 
-
-# @router.patch("/execution/phase/{executionId}")
-# async def update_execution_phase_by_id(executionId: str, phase:ExecutionPhaseUpdate):
-#     # Convert list of Pydantic models to list of dicts
-#     phase_dict = phase.model_dump(exclude_unset=True)  
-
-#     result = await db.executionphases.find_one_and_update(
-#         {"_id": ObjectId(executionId)},
-#         {"$set": phase_dict},
-#         return_document=True
-#     )
-#     if not result:
-#         raise HTTPException(status_code=404, detail="Execution phase not found")
-
-#     return {"id": str(result["_id"])}
 
 @router.patch("/execution/phase/{executionId}")
 async def update_execution_phase_by_id(executionId: str, phase: ExecutionPhaseUpdate, logs: Optional[list[ExecutionLog]] = Body(default=None)):

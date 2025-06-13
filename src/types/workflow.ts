@@ -89,6 +89,7 @@ export type ExecutionWithPhases = {
   status: WorkflowStatus;
   createdAt: string;
   startedAt: string;
+  trigger: string;
   completedAt: string;
   creditsConsumed: number | null;
   phases: Phase[];

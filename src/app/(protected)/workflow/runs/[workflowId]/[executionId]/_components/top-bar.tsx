@@ -19,7 +19,7 @@ const TopBar = ({
     queryFn: () => getWorkflowById({ workflowId }),
   });
   return (
-    <div className="h-14 sticky top-0 w-full bg-background border-b flex items-center px-4 gap-4">
+    <div className="h-14 py-4 sticky top-0 w-full bg-background border-b flex items-center px-4 gap-4">
       <Button
         variant="ghost"
         className="cursor-pointer"
