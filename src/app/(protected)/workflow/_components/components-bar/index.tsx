@@ -17,6 +17,7 @@ import { TaskType } from "@/types/flow-node";
 import { TaskRegistry } from "../../_lib/registry/task-registry";
 import { Button } from "@/components/ui/button";
 
+//Task menu
 const TaskComponentsBar = () => {
   return (
     <ComponentBarProvider>
@@ -28,10 +29,9 @@ const TaskComponentsBar = () => {
       <Sidebar variant="floating" collapsible="offcanvas" side="right">
         <SidebarContent className="hide-scrollbar p-2 pt-10">
           <Accordion
-            type="single"
+            type="multiple"
             className="w-full"
-            collapsible
-            defaultValue={"extraction"}
+            defaultValue={["extraction", "interactions", "webhooks"]}
           >
             <AccordionItem value="extraction">
               <AccordionTrigger className="font-semibold px-2">
@@ -43,14 +43,29 @@ const TaskComponentsBar = () => {
                 <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="demo">
+            <AccordionItem value="interactions">
               <AccordionTrigger className="font-semibold px-2">
-                Web Scrapper
+                User Interaction
               </AccordionTrigger>
               <AccordionContent className="flex flex-col gap-1 text-balance">
-                <TaskMenuBtn taskType={TaskType.LAUNCH_BROWSER} />
-                <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
-                <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
+                <TaskMenuBtn taskType={TaskType.FILL_INPUT} />
+                <TaskMenuBtn taskType={TaskType.CLICK_ELEMENT} />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="timing">
+              <AccordionTrigger className="font-semibold px-2">
+                Timing controls
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-1 text-balance">
+                <TaskMenuBtn taskType={TaskType.WAIT_FOR_ELEMENT} />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="webhooks">
+              <AccordionTrigger className="font-semibold px-2">
+                Webhook
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-1 text-balance">
+                <TaskMenuBtn taskType={TaskType.DELIVER_VIA_WEBHOOK} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>

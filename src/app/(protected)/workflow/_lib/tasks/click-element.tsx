@@ -1,11 +1,11 @@
 import { TaskParamType, TaskType } from "@/types/flow-node";
 import { WorkflowTask } from "@/types/workflow";
-import { CodeIcon, LucideProps } from "lucide-react";
+import { Edit, LucideProps, MousePointerClick } from "lucide-react";
 
-export const PageToHtmlTask = {
-  type: TaskType.PAGE_TO_HTML,
-  label: "Get Html from page",
-  icon: (props: LucideProps) => <CodeIcon {...props} />,
+export const ClickElementTask = {
+  type: TaskType.CLICK_ELEMENT,
+  label: "Click element",
+  icon: (props: LucideProps) => <MousePointerClick {...props} />,
   isEntryPoint: false,
   inputs: [
     {
@@ -13,12 +13,13 @@ export const PageToHtmlTask = {
       type: TaskParamType.BROWSER_INSTANCE,
       required: true,
     },
+    {
+      name: "Selector",
+      type: TaskParamType.STRING,
+      required: true,
+    },
   ] as const,
   outputs: [
-    {
-      name: "Html",
-      type: TaskParamType.STRING,
-    },
     {
       name: "Web page",
       type: TaskParamType.BROWSER_INSTANCE,

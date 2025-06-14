@@ -1,8 +1,8 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { PageToHtml } from "@/app/(protected)/workflow/_lib/tasks/page-to-html";
+import { PageToHtmlTask } from "@/app/(protected)/workflow/_lib/tasks/page-to-html";
 
 export const PageToHtmlExecutor = async (
-  environment: ExecutionEnvironment<typeof PageToHtml>
+  environment: ExecutionEnvironment<typeof PageToHtmlTask>
 ): Promise<boolean> => {
   try {
     const html = await environment.getPage()?.content();

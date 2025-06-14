@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import StringParam from "./param/string-param";
 import { useReactFlow } from "@xyflow/react";
 import BrowserInstanceParam from "./param/browser-instance-param";
+import SelectParam from "./param/select-param";
 
 const NodeParamField = ({
   param,
@@ -43,12 +44,20 @@ const NodeParamField = ({
       return (
         <BrowserInstanceParam
           param={param}
-          value={""}
+          value={value || ""}
+          updateNodeParamValue={updateNodeParamValue}
+        />
+      );
+    case TaskParamType.SELECT:
+      return (
+        <SelectParam
+          param={param}
+          value={value}
           updateNodeParamValue={updateNodeParamValue}
         />
       );
     default:
-      break;
+      return <div>case not found</div>;
   }
 };
 

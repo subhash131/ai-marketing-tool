@@ -290,8 +290,8 @@ function LogViewer({ logs }: { logs: Log[] | undefined }) {
           <TableHeader>
             <TableRow>
               <TableHead>Time</TableHead>
-              <TableHead>Message</TableHead>
               <TableHead>Level</TableHead>
+              <TableHead>Message</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -299,9 +299,6 @@ function LogViewer({ logs }: { logs: Log[] | undefined }) {
               <TableRow key={log.id} className="text-muted-foreground">
                 <TableCell>
                   {new Date(log.timestamp).toLocaleString()}
-                </TableCell>
-                <TableCell className="text-sm flex-1 p-0.5 pl-4">
-                  {log.message}
                 </TableCell>
                 <TableCell
                   className={cn(
@@ -312,6 +309,9 @@ function LogViewer({ logs }: { logs: Log[] | undefined }) {
                   )}
                 >
                   {log.logLevel}
+                </TableCell>
+                <TableCell className="text-sm flex-1 p-0.5 pl-4">
+                  {log.message}
                 </TableCell>
               </TableRow>
             ))}
