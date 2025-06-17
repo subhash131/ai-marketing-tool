@@ -6,6 +6,7 @@ import WorkflowCard from "./workflow-card";
 import CreateWorkflow from "./create-workflow";
 import { toast } from "sonner";
 import { Workflow } from "@/types/workflow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const WorkflowsGrid = () => {
   const { data, isError, isSuccess, isLoading } = useQuery({
@@ -23,7 +24,17 @@ const WorkflowsGrid = () => {
   return (
     <div className="px-10 size-full h-screen">
       <div className="grid w-full h-fit grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 justify-center pt-10">
-        <CreateWorkflow />
+        {!isLoading && <CreateWorkflow />}
+        {isLoading && (
+          <>
+            <Skeleton className="h-60 w-full" />
+            <Skeleton className="h-60 w-full" />
+            <Skeleton className="h-60 w-full" />
+            <Skeleton className="h-60 w-full" />
+            <Skeleton className="h-60 w-full" />
+          </>
+        )}
+
         {isSuccess &&
           data?.length &&
           data.map((item: Workflow) => (

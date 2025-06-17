@@ -55,7 +55,7 @@ const NodeHeader = ({ taskType, nodeId }: props) => {
       </div>
       <div>
         <p className="text-[0.5rem]">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, sit?
+          {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, sit? */}
         </p>
       </div>
     </div>

@@ -132,7 +132,7 @@ const Editor = () => {
 
   if (!id) return;
   return (
-    <div className="size-full ">
+    <div className="size-full relative">
       <TopBar title={data?.name || "untitled"} subtitle="" workflowId={id} />
       <ReactFlow
         nodes={nodes}

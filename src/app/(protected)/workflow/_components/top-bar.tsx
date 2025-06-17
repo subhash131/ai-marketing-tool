@@ -7,6 +7,16 @@ import ExecuteWorkflow from "./execute-workflow";
 import ExitEditor from "./exit-editor";
 import NavigationTabs from "./navigation-tabs";
 import PublishWorkflow from "./publish-workflow";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { NewCredentialDialog } from "../../(menu)/credentials/_components/new-credential-form";
 
 const TopBar = ({
   title,
@@ -39,7 +49,6 @@ const TopBar = ({
               <p className="text-xs text-muted-foreground">{subtitle}</p>
             </div>
             <div className="flex items-center gap-1">
-              {/* TODO:: */}
               <ExecuteWorkflow workflowId={workflowId} />
               <PublishWorkflow workflowId={workflowId} />
               <SaveWorkflow workflowId={workflowId} />
@@ -47,6 +56,7 @@ const TopBar = ({
             </div>
           </div>
           <NavigationTabs workflowId={workflowId} />
+          <NewCredentialDialog />
         </div>
       </div>
     </header>

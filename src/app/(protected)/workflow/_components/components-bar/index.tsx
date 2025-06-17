@@ -66,6 +66,9 @@ const TaskComponentsBar = () => {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col gap-1 text-balance">
                 <TaskMenuBtn taskType={TaskType.DELIVER_VIA_WEBHOOK} />
+                <TaskMenuBtn taskType={TaskType.EXTRACT_DATA_WITH_AI} />
+                <TaskMenuBtn taskType={TaskType.READ_PROPERTY_FROM_JSON} />
+                <TaskMenuBtn taskType={TaskType.ADD_PROPERTY_TO_JSON} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>

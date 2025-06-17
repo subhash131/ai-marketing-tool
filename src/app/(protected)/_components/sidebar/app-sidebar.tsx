@@ -3,9 +3,9 @@ import {
   Calendar,
   Home,
   Inbox,
+  Key,
   Menu,
   Moon,
-  Search,
   Settings,
   Sun,
 } from "lucide-react";
@@ -27,7 +27,6 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-// Menu items.
 const items = [
   {
     title: "Home",
@@ -35,8 +34,8 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Workflows",
+    url: "/workflows",
     icon: Inbox,
   },
   {
@@ -45,9 +44,9 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Credentials",
+    url: "/credentials",
+    icon: Key,
   },
   {
     title: "Settings",
